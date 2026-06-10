@@ -1,8 +1,9 @@
 from typing import Literal
+
 from pydantic import BaseModel, Field
 
-
 # --- Confic Validation Schema ---
+
 
 class Models(BaseModel):
     eval_model: str = Field(pattern=r"^(ollama|mistral|gemini)/.+$")
@@ -10,14 +11,20 @@ class Models(BaseModel):
     ref_model: str = Field(pattern=r"^(ollama|mistral|gemini)/.+$")
     j_ref_model: str = Field(pattern=r"^(ollama|mistral|gemini)/.+$")
 
+
 class Setting(BaseModel):
     """Used to validate config.json"""
+
     local: Models
     cloud: Models
 
+
 # --- Static Analysis Schema ---
 
-class SmellCode(BaseModel): #this is only a placeholder to be replaced according to the useful fields outputed by the choosen tool
+
+class SmellCode(
+    BaseModel
+):  # this is only a placeholder to be replaced according to the useful fields outputed by the choosen tool
     file_name: str
     class_name: str
     method_name: str
@@ -26,11 +33,16 @@ class SmellCode(BaseModel): #this is only a placeholder to be replaced according
     description: str
     context: str = ""
 
-class Candidate(BaseModel): #this on the other hand should remain in place if possible to not break the rest of the code
+
+class Candidate(
+    BaseModel
+):  # this on the other hand should remain in place if possible to not break the rest of the code
     smell_type: str
     smell: SmellCode
 
+
 # --- evaluation schema ---
+
 
 class Heuristic(BaseModel):
     name: str = Field(
@@ -42,6 +54,7 @@ class Heuristic(BaseModel):
     conclusion: Literal["met", "unmet"] = Field(
         description="The final determination for this specific heuristic: 'met' if the code adheres to it, or 'unmet' if it violates it."
     )
+
 
 class Evaluation(BaseModel):
     heuristics: list[Heuristic] = Field(
@@ -59,6 +72,7 @@ class Evaluation(BaseModel):
 
 
 # --- Evaluation Judgment Schema ---
+
 
 class RubricE(BaseModel):
     R1: str = Field(
@@ -80,6 +94,7 @@ class RubricE(BaseModel):
         description="Detailed critique on the overall logical coherence of the summary, ensuring it is entirely free of internal contradictions."
     )
 
+
 class JudgementE(BaseModel):
     rubrics: RubricE = Field(
         description="A structured object containing the granular audits for each of the six rubric criteria (R1 through R6)."
@@ -96,6 +111,7 @@ class JudgementE(BaseModel):
 
 
 # --- Refactoring Schema ---
+
 
 class Refactor(BaseModel):
     thought: str = Field(
@@ -125,7 +141,9 @@ class Refactor(BaseModel):
         )
     )
 
+
 # --- Reafactoring Judgement Schema ---
+
 
 class RubricR(BaseModel):
     R1: str = Field(
@@ -140,6 +158,7 @@ class RubricR(BaseModel):
     R4: str = Field(
         description="Free of Bugs: Evaluate if the code completely preserves the original system logic without introducing edge-case regressions or bugs."
     )
+
 
 class JudgementR(BaseModel):
     rubrics: RubricR = Field(
