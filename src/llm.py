@@ -1,6 +1,8 @@
 import litellm
 from pydantic import BaseModel
-from constants import TEMPERATURE, MAX_TOKENS
+
+from constants import MAX_TOKENS, TEMPERATURE
+
 
 def unified_call(prompt: str, model: str, schema: type[BaseModel]) -> dict:
     try:
@@ -10,9 +12,9 @@ def unified_call(prompt: str, model: str, schema: type[BaseModel]) -> dict:
             response_format=schema,
             temperature=TEMPERATURE,
             num_retries=3,
-            max_tokens=MAX_TOKENS
+            max_tokens=MAX_TOKENS,
         )
-        
+
         if not isinstance(response, litellm.ModelResponse):
             raise TypeError("Streamed response received.")
         raw_content = response.choices[0].message.content

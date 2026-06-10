@@ -4,18 +4,24 @@ from pathlib import Path
 
 SCRIPT_DIR: Path = Path(__file__).resolve().parent
 PROJECT_DIR: Path = SCRIPT_DIR.parent
-CONFIG_PATH: Path = SCRIPT_DIR / 'config.json'
-HEURISTICS_PATH: Path = SCRIPT_DIR / 'data' / 'heuristics.json'
-CHECKPOINT_PATH: Path = SCRIPT_DIR / 'data' / 'checkpoint.json'
-LOG_PATH: Path = SCRIPT_DIR / 'data' / 'log.json'
-STAGES: list[str] = ["static_analysis", "eval_loop", "initial_refactoring", "refactoring_loop", "saving"]
-CHROMA_DIR: Path = SCRIPT_DIR / 'chroma_db'
+CONFIG_PATH: Path = SCRIPT_DIR / "config.json"
+HEURISTICS_PATH: Path = SCRIPT_DIR / "data" / "heuristics.json"
+CHECKPOINT_PATH: Path = SCRIPT_DIR / "data" / "checkpoint.json"
+LOG_PATH: Path = SCRIPT_DIR / "data" / "log.json"
+STAGES: list[str] = [
+    "static_analysis",
+    "eval_loop",
+    "initial_refactoring",
+    "refactoring_loop",
+    "saving",
+]
+CHROMA_DIR: Path = SCRIPT_DIR / "chroma_db"
 
 # Maximum numbers of times the evaluator/generator will try to generate a response to be judged.
 MAX_TENTATIVES: int = 3
 
-# Maximum number of concurrent retrievals 
-MAX_ASYNC_WORKERS = 1 #effectly eliminating async to facilitate iteration on the code, increase latter if retriever code allows
+# Maximum number of concurrent retrievals
+MAX_ASYNC_WORKERS = 1  # effectly eliminating async to facilitate iteration on the code, increase latter if retriever code allows
 
 # Chunking Config, a bigger the chunck is faster and less precise, while a smaller chunck is more precise and slower
 CHUNK_SIZE = 1500
