@@ -1,4 +1,3 @@
-import json
 import asyncio
 from constants import MAX_ASYNC_WORKERS, CHROMA_DIR, TOP_K, EMBED_MODEL
 from typing import List, Tuple, Dict, Any
@@ -6,7 +5,6 @@ from concurrent.futures import ProcessPoolExecutor
 from langchain_core.retrievers import BaseRetriever
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
-from pydantic import BaseModel
 from pathlib import Path
 from .schemas import Candidate
 from .indexer import indexer
@@ -80,7 +78,7 @@ def static(code_path: Path) -> List[Tuple[str, Dict[str, Any]]]:
     candidates = _json_parser(tool_return)
 
     # 4. Ensures the indexing has ended
-    indexing_end = indexer_future.result()
+    indexer_future.result()
     executor.shutdown(wait=True)    
 
     # 6. Retrieves RAG context using candidate attributes

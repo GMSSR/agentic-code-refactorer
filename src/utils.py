@@ -1,7 +1,6 @@
 import sys
 import json
 from constants import CHECKPOINT_PATH, MAX_TENTATIVES
-from pathlib import Path
 
 def feedback_loop(items, process_func, judge_func):
     approved = []
