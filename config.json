@@ -1,0 +1,14 @@
+{
+    "local":{
+        "eval_model": "ollama/mistral3:3b",
+        "j_eval_model": "ollama/gemma4:e4b",
+        "ref_model": "ollama/mistral3:3b",
+        "j_ref_model": "ollama/gemma4:e4b"
+    },
+    "cloud": {
+        "eval_model": "mistral/mistral-medium-latest",
+        "j_eval_model": "gemini/gemini-3.5-flash",
+        "ref_model": "mistral/mistral-codestral-latest",
+        "j_ref_model": "gemini/gemini-3.5-flash"
+    }
+}
