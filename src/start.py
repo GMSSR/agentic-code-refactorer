@@ -71,9 +71,6 @@ def _load(local: bool) -> tuple[dict[str, Any], str, str, str, str]:
         j_eval_model = validated_config.local.j_eval_model
         ref_model = validated_config.local.ref_model
         j_ref_model = validated_config.local.j_ref_model
-
-        mistral_client = None
-        google_client = None
     else:
         eval_model = validated_config.cloud.eval_model
         j_eval_model = validated_config.cloud.j_eval_model

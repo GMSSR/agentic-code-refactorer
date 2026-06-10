@@ -1,5 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_text_splitters import Language # Consider using this splitter by using the source code file extention to determine the language
+# from langchain_text_splitters import Language # Consider using this splitter by using the source code file extention to determine the language
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from pathlib import Path
