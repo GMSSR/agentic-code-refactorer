@@ -21,7 +21,7 @@ CHROMA_DIR: Path = SCRIPT_DIR / "chroma_db"
 MAX_TENTATIVES: int = 3
 
 # Maximum number of concurrent retrievals
-MAX_ASYNC_WORKERS = 1  # effectly eliminating async to facilitate iteration on the code, increase latter if retriever code allows
+MAX_ASYNC_WORKERS = 1  # effectly eliminating async to facilitate iteration on the code
 
 # Chunking Config, a bigger the chunck is faster and less precise, while a smaller chunck is more precise and slower
 CHUNK_SIZE = 1500

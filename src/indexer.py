@@ -3,7 +3,8 @@ from pathlib import Path
 
 from langchain_chroma import Chroma
 
-# from langchain_text_splitters import Language # Consider using this splitter by using the source code file extention to determine the language
+# from langchain_text_splitters import Language
+# # Consider using this splitter by using the source code file extention to determine the language
 from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -60,6 +61,6 @@ def indexer(code_path: Path):
     # quando o código mudar.
     #
 
-    db = Chroma.from_texts(
+    Chroma.from_texts(
         texts=texts, embedding=embeddings, persist_directory=str(CHROMA_DIR)
     )

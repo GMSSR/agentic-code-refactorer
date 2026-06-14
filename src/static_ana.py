@@ -1,16 +1,19 @@
 import asyncio
-from constants import MAX_ASYNC_WORKERS, CHROMA_DIR, TOP_K, EMBED_MODEL
-from typing import List, Tuple, Dict, Any
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
+from typing import Any
+
+from langchain_chroma import Chroma
 from langchain_core.retrievers import BaseRetriever
 from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
-from pathlib import Path
-from .schemas import Candidate
+
+from constants import CHROMA_DIR, EMBED_MODEL, MAX_ASYNC_WORKERS, TOP_K
+
 from .indexer import indexer
+from .schemas import Candidate
 
 
-def _json_parser(static_json: Dict[str, Any]) -> List[Candidate]:
+def _json_parser(_static_json: dict[str, Any]) -> list[Candidate]:
     """
     Receives the json of the static analysis tool, parses it,
     and validates it into a list of Pydantic Candidate objects.
@@ -32,10 +35,10 @@ def _json_parser(static_json: Dict[str, Any]) -> List[Candidate]:
 
 async def _rag_worker(
     candidate: Candidate,
-    code_path: Path,
+    _code_path: Path,
     semaphore: asyncio.Semaphore,
     retriever: BaseRetriever,
-) -> Tuple[str, Dict[str, Any]]:
+) -> tuple[str, dict[str, Any]]:
     """Retrieves relevant surrounding code or documentation context."""
 
     async with semaphore:
@@ -47,8 +50,8 @@ async def _rag_worker(
 
 
 async def _rag(
-    candidates: List[Candidate], code_path: Path
-) -> List[Tuple[str, Dict[str, Any]]]:
+    candidates: list[Candidate], code_path: Path
+) -> list[tuple[str, dict[str, Any]]]:
     limit = asyncio.Semaphore(MAX_ASYNC_WORKERS)
     embeddings = OllamaEmbeddings(model=EMBED_MODEL)
     db = Chroma(
@@ -68,7 +71,7 @@ async def _rag(
     return output
 
 
-def static(code_path: Path) -> List[Tuple[str, Dict[str, Any]]]:
+def static(code_path: Path) -> list[tuple[str, dict[str, Any]]]:
     """
     Main orchestrator for static analysis stage.
     Returns a list of tuples (smell_type, smell_object) to match main loop unpacking.
