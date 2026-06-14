@@ -15,7 +15,14 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pysonar>=1.6.0.4905",
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.16",
 ]
 
 [tool.uv]
 exclude-newer = "7 days"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
