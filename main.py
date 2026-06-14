@@ -2,6 +2,7 @@ import json
 import signal
 import sys
 from pathlib import Path
+from threading import Event
 
 from dotenv import load_dotenv
 
@@ -22,20 +23,20 @@ from src.utils import feedback_loop, save_checkpoint
 if str(c.PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(c.PROJECT_DIR))
 
-"""Flag for handling interruption, to be deprecated in favor of handling keyboard interrupt more granularly in the future. 
+"""Flag for handling interruption, to be deprecated in favor of being more granularly in the future.
 With the goal of allowing quicker handling.
 """
-inter = False
+interrupted = Event()
 
 
 def signal_handler(sig, frame):
     """To be deprecated"""
-    global inter
-    if not inter:
+    if not interrupted.is_set():
         print(
-            "Exiting after the next checkpoint is saved, press 'ctrl + c' again to force exit before the checkpoint."
+            "Exiting after the next checkpoint is saved, press 'ctrl + c' again"
+            "to force exit before the checkpoint."
         )
-        inter = True
+        interrupted.set()
     else:
         print("Force Closing.")
         sys.exit(10)
@@ -148,7 +149,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             smell,
             heuristics,
             evaluation,
-        ) in temp:  # This likely can be easily offloaded to feedback_loop, remember to change save_checkpoint to support
+        ) in temp:  # This likely can be offloaded to feedback_loop, remember to change save_checkpoint to support
             judgment = unified_call(
                 prompt=j_eval_prompt(
                     type_smell=smell_type,
@@ -187,7 +188,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if inter:
+        if interrupted:
             sys.exit(130)
 
     if start_index <= c.STAGES.index("eval_loop"):
@@ -197,7 +198,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
 
         approved_eval.extend(new_approved_eval)
 
-        for smell_type, smell, heuristics, evaluation, judgment in rejected_eval:
+        for smell_type, smell, __, __, __ in rejected_eval:
             container.state.output.append(
                 {
                     "smell_type": smell_type,
@@ -234,7 +235,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if inter:
+        if interrupted:
             sys.exit(130)
 
     if (
@@ -286,7 +287,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if inter:
+        if interrupted:
             sys.exit(130)
 
     if (
@@ -304,10 +305,10 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         for (
             smell_type,
             smell,
-            heuristics,
+            _heuristics,
             evaluation,
-            proposal,
-            judgment,
+            _proposal,
+            _judgment,
         ) in rejected_proposal:
             container.state.output.append(
                 {
@@ -318,7 +319,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                 }
             )
 
-        for smell_type, smell, heuristics, evaluation, proposal in approved_proposal:
+        for smell_type, smell, _heuristics, evaluation, proposal in approved_proposal:
             container.state.output.append(
                 {
                     "smell_type": smell_type,
@@ -337,19 +338,21 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if inter:
+        if interrupted:
             sys.exit(130)
 
     print(
-        f"The number of smells that weren't able to have an evaluation approved within the maximum number of attempts is {len(rejected_eval)}."
+        "The number of smells that weren't able to have an evaluation approved"
+        f"within the maximum number of attempts is {len(rejected_eval)}."
     )
     if not container.config.is_eval_only:
         print(
-            f"The number of smells that weren't able to have a refactoring proposal approved within the maximum number of attempts is {len(rejected_proposal)}."
+            "The number of smells that weren't able to have a refactoring proposal approved"
+                f"within the maximum number of attempts is {len(rejected_proposal)}."
         )
 
     if container.config.is_eval_only and container.config.start_stage != "saving":
-        for smell_type, smell, heuristics, evaluation in approved_eval:
+        for smell_type, smell, _heuristics, evaluation in approved_eval:
             container.state.output.append(
                 {
                     "smell_type": smell_type,

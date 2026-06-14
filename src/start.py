@@ -71,25 +71,25 @@ def _load(local: bool) -> tuple[dict[str, Any], str, str, str, str]:
         with c.CONFIG_PATH.open("r", encoding="utf-8") as file:
             config_data = json.load(file)
     except FileNotFoundError:
-        raise ConfigError("Error: Config file not found.")
+        raise ConfigError("Error: Config file not found.") from None
     except json.JSONDecodeError as e:
-        raise ConfigError(f"Failed to decode JSON: {e.msg} at line {e.lineno}")
+        raise ConfigError(f"Failed to decode JSON: {e.msg} at line {e.lineno}") from None
     except Exception as e:
         raise ConfigError(
             f"An unexpected error occurred while opening the config file: {e}"
-        )
+        ) from None
 
     try:
         with c.HEURISTICS_PATH.open("r", encoding="utf-8") as file:
             heuristics = json.load(file)
     except FileNotFoundError:
-        raise ConfigError("Error: Heuristic File not found.")
+        raise ConfigError("Error: Heuristic File not found.") from None
     except json.JSONDecodeError as e:
-        raise ConfigError(f"Failed to decode JSON: {e.msg} at line {e.lineno}")
+        raise ConfigError(f"Failed to decode JSON: {e.msg} at line {e.lineno}") from None
     except Exception as e:
         raise ConfigError(
             f"An unexpected error occurred while opening the heuristics file: {e}"
-        )
+        ) from None
 
     try:
         validated_config = Setting.model_validate(config_data)
@@ -98,7 +98,7 @@ def _load(local: bool) -> tuple[dict[str, Any], str, str, str, str]:
             f"  - {'.'.join(str(p) for p in err['loc'])}: {err['msg']}"
             for err in e.errors()
         )
-        raise ConfigError(f"Configuration file failed validation: {error_message}")
+        raise ConfigError(f"Configuration file failed validation: {error_message}") from None
 
     if local:
         eval_model = validated_config.local.eval_model
@@ -135,7 +135,7 @@ def _resume() -> tuple[
             code_path = checkpoint_data.get("code_path")
             print(f"Checkpoint found. Resuming evaluation for: {code_path}")
         except Exception as e:
-            raise CheckpointError(f"Error reading checkpoint file: {e}")
+            raise CheckpointError(f"Error reading checkpoint file: {e}") from None
     else:
         raise CheckpointError("Error: No active checkpoint found.")
 
@@ -211,11 +211,3 @@ def start() -> Container:
     container = Container(config=config, state=state)
 
     return container
-
-
-def _main() -> None:
-    pass
-
-
-if __name__ == "__main__":
-    _main()
