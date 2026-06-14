@@ -27,7 +27,7 @@ data/results_*.json
 # Temporary files
 *.temp
 
-#Sonarqube
+#SonarQube
 .sonar/
 sonar-project.properties
 .vscode/
