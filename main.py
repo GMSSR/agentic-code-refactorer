@@ -188,7 +188,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if interrupted:
+        if interrupted.is_set():
             sys.exit(130)
 
     if start_index <= c.STAGES.index("eval_loop"):
@@ -235,7 +235,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if interrupted:
+        if interrupted.is_set():
             sys.exit(130)
 
     if (
@@ -287,7 +287,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if interrupted:
+        if interrupted.is_set():
             sys.exit(130)
 
     if (
@@ -338,7 +338,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             output=container.state.output,
             code_path=container.config.code_path,
         )
-        if interrupted:
+        if interrupted.is_set():
             sys.exit(130)
 
     print(
