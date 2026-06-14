@@ -12,13 +12,13 @@ PROJECT_DIR = Path(__file__).resolve().parent
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
-import constants as c
-from src.llm import unified_call
-from src.prompt import eval_prompt, j_eval_prompt, j_ref_prompt, ref_prompt
-from src.schemas import Evaluation, JudgementE, JudgementR, Refactor
-from src.start import start
-from src.static_ana import static
-from src.utils import feedback_loop, save_checkpoint
+import constants as c  # noqa: E402
+from src.llm import unified_call  # noqa: E402
+from src.prompt import eval_prompt, j_eval_prompt, j_ref_prompt, ref_prompt  # noqa: E402
+from src.schemas import Evaluation, JudgementE, JudgementR, Refactor  # noqa: E402
+from src.start import start  # noqa: E402
+from src.static_ana import static  # noqa: E402
+from src.utils import feedback_loop, save_checkpoint  # noqa: E402
 
 if str(c.PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(c.PROJECT_DIR))
