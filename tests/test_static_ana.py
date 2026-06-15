@@ -71,14 +71,20 @@ async def test_rag_worker_success():
 # ==========================================
 @pytest.mark.asyncio
 @patch("src.static_ana.OllamaEmbeddings")
-@patch("src.static_ana.Chroma")
+@patch("src.static_ana.QdrantClient")
+@patch("src.static_ana.QdrantVectorStore")
 @patch("src.static_ana._rag_worker", new_callable=AsyncMock)
-async def test_rag_orchestration(mock_rag_worker, mock_chroma_cls, mock_embeddings_cls):
+async def test_rag_orchestration(
+    mock_rag_worker, mock_qdrant_cls, mock_qdrant_client_cls, mock_embeddings_cls
+):
     """Ensures RAG initializes LangChain objects properly and gathers worker tasks."""
     mock_db = MagicMock()
     mock_retriever = MagicMock()
     mock_db.as_retriever.return_value = mock_retriever
-    mock_chroma_cls.return_value = mock_db
+    mock_qdrant_cls.return_value = mock_db
+
+    mock_client = MagicMock()
+    mock_qdrant_client_cls.return_value = mock_client
 
     mock_rag_worker.return_value = ("TypeA", {"data": "info"})
 
@@ -95,8 +101,12 @@ async def test_rag_orchestration(mock_rag_worker, mock_chroma_cls, mock_embeddin
 
     # Assertions
     mock_embeddings_cls.assert_called_once()
-    mock_chroma_cls.assert_called_once()
+    mock_qdrant_client_cls.assert_called_once()
+    mock_qdrant_cls.assert_called_once_with(
+        client=mock_client, embedding=mock_embeddings_cls.return_value, collection_name="index"
+    )
     mock_db.as_retriever.assert_called_once()
+    mock_client.close.assert_called_once()
 
     assert mock_rag_worker.call_count == 2
     assert len(results) == 2
@@ -143,17 +153,24 @@ def test_static_pipeline_orchestration(
 
 @pytest.mark.asyncio
 @patch("src.static_ana.OllamaEmbeddings")
-@patch("src.static_ana.Chroma")
-async def test_rag_retriever_failure(mock_chroma_cls, mock_embeddings_cls):
+@patch("src.static_ana.QdrantClient")
+@patch("src.static_ana.QdrantVectorStore")
+async def test_rag_retriever_failure(
+    mock_qdrant_cls, mock_qdrant_client_cls, mock_embeddings_cls
+):
     """Ensures exceptions from the retriever are propagated cleanly out of _rag."""
     mock_db = MagicMock()
     mock_retriever = MagicMock()
     mock_retriever.ainvoke.side_effect = RuntimeError("Ollama connection failed")
     mock_db.as_retriever.return_value = mock_retriever
-    mock_chroma_cls.return_value = mock_db
+    mock_qdrant_cls.return_value = mock_db
+
+    mock_client = MagicMock()
+    mock_qdrant_client_cls.return_value = mock_client
 
     mock_candidate = MagicMock()
     mock_candidate.smell.snippet = "some code"
 
     with pytest.raises(RuntimeError, match="Ollama connection failed"):
         await _rag([mock_candidate], Path("/mock/project"))
+

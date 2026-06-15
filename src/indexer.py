@@ -1,14 +1,14 @@
 import shutil
 from pathlib import Path
 
-from langchain_chroma import Chroma
-
 # from langchain_text_splitters import Language
 # # Consider using this splitter by using the source code file extention to determine the language
 from langchain_ollama import OllamaEmbeddings
+from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from qdrant_client import QdrantClient
 
-from constants import CHROMA_DIR, CHUNK_OVERLAP, CHUNK_SIZE, EMBED_MODEL
+from constants import INDEX_DIR, CHUNK_OVERLAP, CHUNK_SIZE, EMBED_MODEL
 
 
 def indexer(code_path: Path):
@@ -18,8 +18,8 @@ def indexer(code_path: Path):
 
     code_text = code_path.read_text()
 
-    if CHROMA_DIR.exists():
-        for item in CHROMA_DIR.iterdir():
+    if INDEX_DIR.exists():
+        for item in INDEX_DIR.iterdir():
             if item.is_file() or item.is_symlink():
                 item.unlink()
             elif item.is_dir():
@@ -61,6 +61,8 @@ def indexer(code_path: Path):
     # quando o código mudar.
     #
 
-    Chroma.from_texts(
-        texts=texts, embedding=embeddings, persist_directory=str(CHROMA_DIR)
+    client = QdrantClient(path=str(INDEX_DIR))
+    QdrantVectorStore.from_texts(
+        client=client, texts=texts, embedding=embeddings, path=str(INDEX_DIR), collection_name="index"
     )
+    client.close()

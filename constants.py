@@ -15,7 +15,7 @@ STAGES: list[str] = [
     "refactoring_loop",
     "saving",
 ]
-CHROMA_DIR: Path = SCRIPT_DIR / "chroma_db"
+INDEX_DIR: Path = SCRIPT_DIR / "index_db"
 
 # Maximum numbers of times the evaluator/generator will try to generate a response to be judged.
 MAX_TENTATIVES: int = 3
