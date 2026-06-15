@@ -3,11 +3,12 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from langchain_chroma import Chroma
 from langchain_core.retrievers import BaseRetriever
 from langchain_ollama import OllamaEmbeddings
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
 
-from constants import CHROMA_DIR, EMBED_MODEL, MAX_ASYNC_WORKERS, TOP_K
+from constants import INDEX_DIR, EMBED_MODEL, MAX_ASYNC_WORKERS, TOP_K
 
 from .indexer import indexer
 from .schemas import Candidate
@@ -49,24 +50,16 @@ async def _rag_worker(
         return (candidate.smell_type, smell.model_dump())
 
 
-async def _rag(
-    candidates: list[Candidate], code_path: Path
-) -> list[tuple[str, dict[str, Any]]]:
+async def _rag(candidates: list[Candidate], code_path: Path) -> list[tuple[str, dict[str, Any]]]:
     limit = asyncio.Semaphore(MAX_ASYNC_WORKERS)
     embeddings = OllamaEmbeddings(model=EMBED_MODEL)
-    db = Chroma(
-        persist_directory=str(CHROMA_DIR),
-        embedding_function=embeddings,
-    )
-    retriever = db.as_retriever(
-        search_type="mmr", search_kwargs={"k": TOP_K, "score_threshold": 0.55}
-    )
+    client = QdrantClient(path=str(INDEX_DIR))
+    db = QdrantVectorStore(client=client, embedding=embeddings, collection_name="index")
+    retriever = db.as_retriever(search_type="mmr", search_kwargs={"k": TOP_K, "score_threshold": 0.55})
 
-    tasks = [
-        _rag_worker(candidate, code_path, limit, retriever=retriever)
-        for candidate in candidates
-    ]
+    tasks = [_rag_worker(candidate, code_path, limit, retriever=retriever) for candidate in candidates]
     output = await asyncio.gather(*tasks)
+    client.close()
 
     return output
 
