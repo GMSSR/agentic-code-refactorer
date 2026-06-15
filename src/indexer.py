@@ -8,7 +8,7 @@ from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from qdrant_client import QdrantClient
 
-from constants import INDEX_DIR, CHUNK_OVERLAP, CHUNK_SIZE, EMBED_MODEL
+from constants import CHUNK_OVERLAP, CHUNK_SIZE, EMBED_MODEL, INDEX_DIR
 
 
 def indexer(code_path: Path):

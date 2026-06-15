@@ -1,5 +1,6 @@
 import json
 import sys
+from pathlib import Path
 
 from constants import CHECKPOINT_PATH, MAX_TENTATIVES
 
@@ -30,9 +31,7 @@ def feedback_loop(items, process_func, judge_func):
     return approved, rejected
 
 
-def save_checkpoint(
-    stage_name, approved_e, rejected_e, approved_p, rejected_p, output, code_path
-):
+def save_checkpoint(stage_name, approved_e, rejected_e, approved_p, rejected_p, output, code_path):
     cp_payload = {
         "code_path": str(code_path),
         "current_stage": stage_name,
@@ -49,3 +48,66 @@ def save_checkpoint(
         tmp_cp.replace(CHECKPOINT_PATH)
     except Exception as e:
         print(f"Warning: Failed to save progress checkpoint: {e}", file=sys.stderr)
+
+
+def get_language(file_path: Path) -> str | None:
+    """
+    Identifies if a file is a source code file belonging to a specific
+    list of languages based on its extension.
+
+    Args:
+        file_path (Path): A pathlib.Path object pointing to the file.
+
+    Returns:
+        str | None: The name of the matching language, or None if no match is found.
+    """
+    # Mapping extensions (including the dot) to their respective languages
+    EXTENSION_MAP: dict[str, str] = {
+        # C / C++
+        ".c": "C",
+        ".h": "C",
+        ".cpp": "C++",
+        ".hpp": "C++",
+        ".cc": "C++",
+        ".cxx": "C++",
+        # C# & VB.NET
+        ".cs": "C#",
+        ".vb": "VB.NET",
+        # Web Core
+        ".html": "HTML",
+        ".htm": "HTML",
+        ".css": "CSS",
+        # JavaScript & TypeScript
+        ".js": "JavaScript",
+        ".mjs": "JavaScript",
+        ".cjs": "JavaScript",
+        ".ts": "TypeScript",
+        ".tsx": "TypeScript",
+        # Go & Rust
+        ".go": "Go",
+        ".rs": "Rust",
+        # JVM Languages
+        ".java": "Java",
+        ".kt": "Kotlin",
+        ".kts": "Kotlin",
+        ".scala": "Scala",
+        ".sc": "Scala",
+        # Scripting & Backend
+        ".php": "PHP",
+        ".py": "Python",
+        ".pyw": "Python",
+        ".rb": "Ruby",
+        # Apple Ecosystem
+        ".swift": "Swift",
+        # Infrastructure & Data
+        ".tf": "Terraform",
+        ".tfvars": "Terraform",
+        ".xml": "XML",
+        ".xsd": "XML",
+    }
+
+    # path.suffix extracts the extension (e.g., '.py')
+    # .lower() ensures it works regardless of casing (e.g., '.TXT' vs '.txt')
+    file_extension = file_path.suffix.lower()
+
+    return EXTENSION_MAP.get(file_extension)
