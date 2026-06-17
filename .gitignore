@@ -23,6 +23,7 @@ chroma_db/
 data/checkpoint.json
 data/log.json
 data/results_*.json
+data/sat.json
 
 # Temporary files
 *.temp
