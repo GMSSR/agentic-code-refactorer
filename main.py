@@ -123,9 +123,10 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         for smell_type, smell in code_smells:
             heuristics = container.config.heuristic_data.get(smell_type, "N")
             if heuristics == "N":
-                skips += 1
-                skipped_smells.append([smell_type, smell])
-                continue
+                # skips += 1
+                # skipped_smells.append([smell_type, smell])
+                # continue
+                heuristics = container.config.heuristic_data.get("Default")
             evaluation = unified_call(
                 prompt=eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell),
                 model=container.config.eval_model,
