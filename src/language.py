@@ -5,6 +5,7 @@ import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
+import yaml
 from langchain_text_splitters import Language
 from pylint.lint import Run as PylintRun
 from sonarqube import SonarQubeClient
@@ -124,6 +125,55 @@ def get_tool(code_path: Path) -> list[Candidate]:
 
 def _clang_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
+    SAT_PATH.unlink(missing_ok=True)
+    try:
+        clang_path = find_binary(tool="clang-tidy", code_path=code_path)
+        if not clang_path:
+            raise FileNotFoundError
+        code = subprocess.run(  # noqa: S603
+            [clang_path, code_path, f"--export-fixes={SAT_PATH}"], capture_output=True, text=True, check=False
+        )
+        if code.returncode != 0 and not SAT_PATH.exists():
+            print(f"Clang-tidy failed with exit code {code.returncode}")
+            print(f"Standard Error:\n{code.stderr}")
+            return candidates
+    except FileNotFoundError:
+        print("Error: 'clang-tidy' executable not found in PATH.")
+        return candidates
+
+    try:
+        with SAT_PATH.open() as file:
+            output = yaml.safe_load(file)
+    except (
+        yaml.YAMLError,
+        FileNotFoundError,
+    ):
+        return candidates
+
+    if not output or "Diagnostics" not in output:
+        return candidates
+
+    output = output["Diagnostics"]
+    for issue in output:
+        if "DiagnosticMessage" not in issue:
+            continue
+        diagnostic = issue.get("DiagnosticMessage")
+        if not _is_file(diagnostic.get("FilePath"), code_path):
+            continue
+        offset = diagnostic.get("FileOffset")
+        if offset is not None:
+            line, snippet = _clang_snippet(code_path, offset)
+        else:
+            line, snippet = 0, ""
+
+        smell = SmellCode(
+            file_name=str(code_path.name),
+            line=line,
+            snippet=snippet,
+            description=str(diagnostic.get("Message")),
+        )
+
+        candidates.append(Candidate(smell_type=issue.get("DiagnosticName"), smell=smell))
     return candidates
 
 
@@ -141,6 +191,45 @@ def _is_file(diag_path: Path | None, code_path: Path):
         return diag_path.resolve() == code_path.resolve()
 
     return True
+
+
+def _clang_snippet(file_path: Path, byte_offset) -> tuple[int, str]:
+    try:
+        with open(file_path, "rb") as f:
+            content = f.read()
+
+            if byte_offset < 0 or byte_offset > len(content):
+                return 0, "[Offset out of bounds]"
+
+            # Slice the file content up to the target offset
+            prefix = content[:byte_offset]
+
+            # Line number is the number of newlines before the offset + 1
+            line_number = prefix.count(b"\n") + 1
+
+            # Find the start of the current line
+            line_start = prefix.rfind(b"\n")
+            if line_start == -1:
+                line_start = 0
+            else:
+                line_start += 1  # Move past the newline character
+
+            # Find the end of the current line
+            line_end = content.find(b"\n", byte_offset)
+            if line_end == -1:
+                line_end = len(content)
+
+            # Extract and decode the line safely
+            line_bytes = content[line_start:line_end]
+            line_content = line_bytes.decode("utf-8", errors="replace").rstrip()
+
+            return line_number, line_content
+
+    except (
+        OSError,
+        ValueError,
+    ):
+        return 0, "[Error reading file]"
 
 
 def _clippy_tool(code_path: Path) -> list[Candidate]:
