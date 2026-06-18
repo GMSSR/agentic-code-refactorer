@@ -1,9 +1,14 @@
+import json
 import os
 import shutil
 from collections.abc import Callable
 from pathlib import Path
 
 from langchain_text_splitters import Language
+from pylint.lint import Run as PylintRun
+from sonarqube import SonarQubeClient
+
+from constants import SAT_PATH
 from src.schemas import Candidate, SmellCode
 
 
@@ -140,8 +145,40 @@ def _is_file(diag_path: Path | None, code_path: Path):
 def _clippy_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
+
+
 def _pylint_tool(code_path: Path) -> list[Candidate]:
+    SAT_PATH.unlink(missing_ok=True)
+    PylintRun(
+        [
+            str(code_path),
+            "--output-format=json",
+            f"--output={SAT_PATH}",
+            "--ignore=.venv,tests",
+            "--disable=C",
+        ],
+        exit=False,
+    )
+
+    with SAT_PATH.open() as file:
+        output = json.load(file)
+
     candidates: list[Candidate] = []
+    for issue in output:
+        smell = SmellCode(
+            file_name=str(code_path.name),
+            line=int(issue.get("line")),
+            snippet=str(
+                _issue_snippet(
+                    file_path=code_path,
+                    start_line=issue.get("line"),
+                    end_line=issue.get("endLine"),
+                )
+            ),
+            description=str(issue.get("message")),
+        )
+
+        candidates.append(Candidate(smell_type=issue.get("symbol"), smell=smell))
     return candidates
 
 
