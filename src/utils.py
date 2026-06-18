@@ -30,9 +30,7 @@ def feedback_loop(items, process_func, judge_func):
     return approved, rejected
 
 
-def save_checkpoint(
-    stage_name, approved_e, rejected_e, approved_p, rejected_p, output, code_path
-):
+def save_checkpoint(stage_name, approved_e, rejected_e, approved_p, rejected_p, output, code_path):
     cp_payload = {
         "code_path": str(code_path),
         "current_stage": stage_name,

@@ -15,9 +15,7 @@ def mock_data():
     """Provides reusable mock inputs for testing prompt generation functions."""
     return {
         "type_smell": "Long Method",
-        "heuristics": [
-            {"id": "H1", "name": "Lines of Code", "threshold": " > 50 lines"}
-        ],
+        "heuristics": [{"id": "H1", "name": "Lines of Code", "threshold": " > 50 lines"}],
         "smell": {
             "file_name": "analytics.py",
             "class_name": "DataProcessor",
@@ -55,10 +53,7 @@ def test_eval_prompt_baseline(mock_data):
 
     assert "You are an expert software engineer" in prompt
     assert f"Type: {mock_data['type_smell']}" in prompt
-    assert (
-        f"Location: {mock_data['smell']['file_name']} -- Class: {mock_data['smell']['class_name']}"
-        in prompt
-    )
+    assert f"Location: {mock_data['smell']['file_name']} -- Class: {mock_data['smell']['class_name']}" in prompt
 
     # Put json to work: Verify exact serialization of the heuristics constitution
     expected_json = json.dumps(mock_data["heuristics"], indent=4, ensure_ascii=False)
@@ -79,9 +74,7 @@ def test_eval_prompt_with_feedback(mock_data):
     assert "PREVIOUS ATTEMPT & FEEDBACK" in prompt
 
     # Verify the conditional JSON outputs are present
-    assert (
-        json.dumps(mock_data["previous_eval"], indent=4, ensure_ascii=False) in prompt
-    )
+    assert json.dumps(mock_data["previous_eval"], indent=4, ensure_ascii=False) in prompt
     assert json.dumps(mock_data["feedback"], indent=4, ensure_ascii=False) in prompt
 
 
@@ -107,16 +100,14 @@ def test_j_eval_prompt(mock_data):
         type_smell=mock_data["type_smell"],
         heuristics=mock_data["heuristics"],
         smell=mock_data["smell"],
-        eval=mock_data["evaluation"],
+        evaluation=mock_data["evaluation"],
     )
 
     assert "You are a senior software engineering auditor" in prompt
     assert "AUDIT RUBRIC" in prompt
 
     # Verify exact JSON dump of the evaluation payload under audit
-    expected_eval_json = json.dumps(
-        mock_data["evaluation"], indent=4, ensure_ascii=False
-    )
+    expected_eval_json = json.dumps(mock_data["evaluation"], indent=4, ensure_ascii=False)
     assert expected_eval_json in prompt
 
 
@@ -126,7 +117,7 @@ def test_j_eval_prompt_defaults(mock_data):
         type_smell=mock_data["type_smell"],
         heuristics=mock_data["heuristics"],
         smell={},
-        eval=mock_data["evaluation"],
+        evaluation=mock_data["evaluation"],
     )
 
     assert "Location: Unknown -- N/A / N/A" in prompt
@@ -143,7 +134,7 @@ def test_ref_prompt_baseline(mock_data):
         type_smell=mock_data["type_smell"],
         heuristics=mock_data["heuristics"],
         smell=mock_data["smell"],
-        eval=mock_data["evaluation"],
+        evaluation=mock_data["evaluation"],
     )
 
     assert "You are a senior software engineer specialized in clean code" in prompt
@@ -156,16 +147,13 @@ def test_ref_prompt_with_feedback(mock_data):
         type_smell=mock_data["type_smell"],
         heuristics=mock_data["heuristics"],
         smell=mock_data["smell"],
-        eval=mock_data["evaluation"],
+        evaluation=mock_data["evaluation"],
         previous_proposal=mock_data["previous_proposal"],
         feedback="Code block has missing syntax requirements.",
     )
 
     assert "FEEDBACK ON PREVIOUS ATTEMPT" in prompt
-    assert (
-        json.dumps(mock_data["previous_proposal"], indent=4, ensure_ascii=False)
-        in prompt
-    )
+    assert json.dumps(mock_data["previous_proposal"], indent=4, ensure_ascii=False) in prompt
     assert "Code block has missing syntax requirements." in prompt
 
 
@@ -180,7 +168,7 @@ def test_j_ref_prompt(mock_data):
         type_smell=mock_data["type_smell"],
         heuristics=mock_data["heuristics"],
         smell=mock_data["smell"],
-        eval=mock_data["evaluation"],
+        evaluation=mock_data["evaluation"],
         ref=mock_data["previous_proposal"],
     )
 
@@ -188,7 +176,4 @@ def test_j_ref_prompt(mock_data):
         "You are a senior software engineering auditor specialized in evaluating the quality of proposed source code refactorings."
         in prompt
     )
-    assert (
-        json.dumps(mock_data["previous_proposal"], indent=4, ensure_ascii=False)
-        in prompt
-    )
+    assert json.dumps(mock_data["previous_proposal"], indent=4, ensure_ascii=False) in prompt

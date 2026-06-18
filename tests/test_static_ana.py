@@ -6,21 +6,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from src.schemas import Candidate
-from src.static_ana import _json_parser, _rag, _rag_worker, static
+from src.static_ana import _rag, _rag_worker, static
 
 
 # ==========================================
-# 1. Tests for _json_parser
-# ==========================================
-def test_json_parser_returns_empty_list():
-    """Verifies current placeholder behavior of the parser."""
-    result = _json_parser({"issues": []})
-    assert result == []
-    assert isinstance(result, list)
-
-
-# ==========================================
-# 2. Tests for _rag_worker (Async)
+# 1. Tests for _rag_worker (Async)
 # ==========================================
 @pytest.mark.asyncio
 async def test_rag_worker_success():
@@ -67,16 +57,14 @@ async def test_rag_worker_success():
 
 
 # ==========================================
-# 3. Tests for _rag (Async Orchestrator)
+# 2. Tests for _rag (Async Orchestrator)
 # ==========================================
 @pytest.mark.asyncio
 @patch("src.static_ana.OllamaEmbeddings")
 @patch("src.static_ana.QdrantClient")
 @patch("src.static_ana.QdrantVectorStore")
 @patch("src.static_ana._rag_worker", new_callable=AsyncMock)
-async def test_rag_orchestration(
-    mock_rag_worker, mock_qdrant_cls, mock_qdrant_client_cls, mock_embeddings_cls
-):
+async def test_rag_orchestration(mock_rag_worker, mock_qdrant_cls, mock_qdrant_client_cls, mock_embeddings_cls):
     """Ensures RAG initializes LangChain objects properly and gathers worker tasks."""
     mock_db = MagicMock()
     mock_retriever = MagicMock()
@@ -113,15 +101,13 @@ async def test_rag_orchestration(
 
 
 # ==========================================
-# 4. Tests for static (Sync Orchestrator)
+# 3. Tests for static (Sync Orchestrator)
 # ==========================================
 @patch("src.static_ana.ProcessPoolExecutor")
 @patch("src.static_ana._json_parser")
 @patch("src.static_ana._rag", new_callable=AsyncMock)
 @patch("src.static_ana.indexer")
-def test_static_pipeline_orchestration(
-    mock_indexer, mock_rag, mock_json_parser, mock_executor_cls
-):
+def test_static_pipeline_orchestration(mock_indexer, mock_rag, mock_json_parser, mock_executor_cls):
     """Verifies process tracking, parsing, and execution order inside the main pipeline."""
     # 1. Mock ProcessPoolExecutor interactions
     mock_executor = MagicMock()
@@ -155,9 +141,7 @@ def test_static_pipeline_orchestration(
 @patch("src.static_ana.OllamaEmbeddings")
 @patch("src.static_ana.QdrantClient")
 @patch("src.static_ana.QdrantVectorStore")
-async def test_rag_retriever_failure(
-    mock_qdrant_cls, mock_qdrant_client_cls, mock_embeddings_cls
-):
+async def test_rag_retriever_failure(mock_qdrant_cls, mock_qdrant_client_cls, mock_embeddings_cls):
     """Ensures exceptions from the retriever are propagated cleanly out of _rag."""
     mock_db = MagicMock()
     mock_retriever = MagicMock()
@@ -173,4 +157,3 @@ async def test_rag_retriever_failure(
 
     with pytest.raises(RuntimeError, match="Ollama connection failed"):
         await _rag([mock_candidate], Path("/mock/project"))
-

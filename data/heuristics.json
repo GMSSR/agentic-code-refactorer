@@ -34,5 +34,43 @@
         "H2": "Does the class inherit methods never used?",
         "H3": "Does the class inherit methods that are not adherent with its definition?",
         "H4": "Are there too many methods being overridden?"
+    },
+    "Default":{
+            "Data Class": {
+        "H1": "Does the class have other methods than getters and setters?",
+        "H2": "Does the class have other methods than its constructor?",
+        "H3": "Is the class data being externally manipulated?"
+    },
+    "Feature Envy": {
+        "H1": "Does the method call external methods too frequently?",
+        "H2": "Can you visualize an alternative implementation of this method focused on manipulating its own data?"
+    },
+    "God Class": {
+        "H1": "Does the class have clear responsibilities from other classes?",
+        "H2": "Does it make sense for you to split this class into two or more classes?",
+        "H3": "Does the class size hinder its readability/comprehensibility?"
+    },
+    "Long Parameter List": {
+        "H1": "Does the method signature have too many parameters?",
+        "H2": "Are there too many parameters composed of complex types?",
+        "H3": "Do the parameters’ names contribute to reaching a clear understanding of their purpose?",
+        "H4": "4-Does the method actually use all its parameters?",
+        "H5": "Are all parameters actually needed?",
+        "H6": "May the parameters be passed more simply?"
+    },
+    "Middle Man": {
+        "H1": "Does the class perform any relevant logical task?",
+        "H2": "Does the class clearly delegate its responsibilities to other classes?"
+    },
+    "Primitive Obsession": {
+        "H1": "Does replacing one or more primitive variables with objects sound to be the best choice?",
+        "H2": "May two or more variables be consolidated into a single complex type?"
+    },
+    "Refused Bequest": {
+        "H1": "Does the inheritance conceptually make sense?",
+        "H2": "Does the class inherit methods never used?",
+        "H3": "Does the class inherit methods that are not adherent with its definition?",
+        "H4": "Are there too many methods being overridden?"
+    }
     }
 }

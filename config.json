@@ -1,9 +1,9 @@
 {
     "local":{
-        "eval_model": "ollama/mistral3:3b",
-        "j_eval_model": "ollama/gemma4:e4b",
-        "ref_model": "ollama/mistral3:3b",
-        "j_ref_model": "ollama/gemma4:e4b"
+        "eval_model": "ollama/ministral-3:3b",
+        "j_eval_model": "ollama/gemma4:e2b",
+        "ref_model": "ollama/ministral-3:3b",
+        "j_ref_model": "ollama/gemma4:e2b"
     },
     "cloud": {
         "eval_model": "mistral/mistral-medium-latest",

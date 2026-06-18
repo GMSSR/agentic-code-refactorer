@@ -32,10 +32,7 @@ interrupted = Event()
 def signal_handler(sig, frame):
     """To be deprecated"""
     if not interrupted.is_set():
-        print(
-            "Exiting after the next checkpoint is saved, press 'ctrl + c' again"
-            "to force exit before the checkpoint."
-        )
+        print("Exiting after the next checkpoint is saved, press 'ctrl + c' again to force exit before the checkpoint.")
         interrupted.set()
     else:
         print("Force Closing.")
@@ -58,12 +55,10 @@ def eval_func(old_eval):  # likely should be moved to another file
     return (smell_type, smell, heuristics, evaluation)
 
 
-def judge_eval_func(eval):  # likely should be moved to another file
-    smell_type, smell, heuristics, evaluation = eval
+def judge_eval_func(evaluation):  # likely should be moved to another file
+    smell_type, smell, heuristics, evaluation = evaluation
     judgment = unified_call(
-        prompt=j_eval_prompt(
-            type_smell=smell_type, heuristics=heuristics, smell=smell, eval=evaluation
-        ),
+        prompt=j_eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell, evaluation=evaluation),
         model=container.config.j_eval_model,
         schema=JudgementE,
     )
@@ -77,7 +72,7 @@ def proposal_func(old_proposal):  # likely should be moved to another file
             type_smell=smell_type,
             heuristics=heuristics,
             smell=smell,
-            eval=evaluation,
+            evaluation=evaluation,
             previous_proposal=proposal,
             feedback=judgment.get("feedback"),
         ),
@@ -94,7 +89,7 @@ def judge_proposal_func(refactor):  # likely should be moved to another file
             type_smell=smell_type,
             heuristics=heuristics,
             smell=smell,
-            eval=evaluation,
+            evaluation=evaluation,
             ref=proposal,
         ),
         model=container.config.j_ref_model,
@@ -117,11 +112,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
     RESULTS_PATH = c.SCRIPT_DIR / "data" / f"results_{file_pure_name}.json"
     print(f"Results for this run will be saved to: {RESULTS_PATH}\n")
 
-    start_index = (
-        c.STAGES.index(container.config.start_stage)
-        if container.config.start_stage in c.STAGES
-        else 0
-    )
+    start_index = c.STAGES.index(container.config.start_stage) if container.config.start_stage in c.STAGES else 0
 
     if start_index <= c.STAGES.index("static_analysis"):
         skips = 0
@@ -132,13 +123,12 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         for smell_type, smell in code_smells:
             heuristics = container.config.heuristic_data.get(smell_type, "N")
             if heuristics == "N":
-                skips += 1
-                skipped_smells.append([smell_type, smell])
-                continue
+                # skips += 1
+                # skipped_smells.append([smell_type, smell])
+                # continue
+                heuristics = container.config.heuristic_data.get("Default")
             evaluation = unified_call(
-                prompt=eval_prompt(
-                    type_smell=smell_type, heuristics=heuristics, smell=smell
-                ),
+                prompt=eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell),
                 model=container.config.eval_model,
                 schema=Evaluation,
             )
@@ -155,7 +145,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                     type_smell=smell_type,
                     heuristics=heuristics,
                     smell=smell,
-                    eval=evaluation,
+                    evaluation=evaluation,
                 ),
                 model=container.config.j_eval_model,
                 schema=JudgementE,
@@ -164,13 +154,9 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             if judgment.get("verdict") == "approved":
                 approved_eval.append([smell_type, smell, heuristics, evaluation])
             else:
-                rejected_eval.append(
-                    [smell_type, smell, heuristics, evaluation, judgment]
-                )
+                rejected_eval.append([smell_type, smell, heuristics, evaluation, judgment])
 
-        print(
-            f"The number of smells that were skipped due to missing heuristics was: {skips}\n"
-        )
+        print(f"The number of smells that were skipped due to missing heuristics was: {skips}\n")
         try:
             tmp_filename = c.LOG_PATH.with_name(f"{c.LOG_PATH.name}.tmp")
             with tmp_filename.open("w", encoding="utf-8") as f:
@@ -238,10 +224,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         if interrupted.is_set():
             sys.exit(130)
 
-    if (
-        start_index <= c.STAGES.index("initial_refactoring")
-        and not container.config.is_eval_only
-    ):
+    if start_index <= c.STAGES.index("initial_refactoring") and not container.config.is_eval_only:
         temp = []
         for smell_type, smell, heuristics, evaluation in approved_eval:
             proposal = unified_call(
@@ -249,7 +232,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                     type_smell=smell_type,
                     heuristics=heuristics,
                     smell=smell,
-                    eval=evaluation,
+                    evaluation=evaluation,
                 ),
                 model=container.config.ref_model,
                 schema=Refactor,
@@ -262,7 +245,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                     type_smell=smell_type,
                     heuristics=heuristics,
                     smell=smell,
-                    eval=evaluation,
+                    evaluation=evaluation,
                     ref=proposal,
                 ),
                 model=container.config.j_ref_model,
@@ -270,13 +253,9 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             )  # This likely can be easily offloaded to feedback_loop, remember to change save_checkpoint to support
 
             if judgment.get("verdict") == "approved":
-                approved_proposal.append(
-                    [smell_type, smell, heuristics, evaluation, proposal]
-                )
+                approved_proposal.append([smell_type, smell, heuristics, evaluation, proposal])
             else:
-                rejected_proposal.append(
-                    [smell_type, smell, heuristics, evaluation, proposal, judgment]
-                )
+                rejected_proposal.append([smell_type, smell, heuristics, evaluation, proposal, judgment])
         current_stage = "refactoring_loop"
         save_checkpoint(
             current_stage,
@@ -290,10 +269,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         if interrupted.is_set():
             sys.exit(130)
 
-    if (
-        start_index <= c.STAGES.index("refactoring_loop")
-        and not container.config.is_eval_only
-    ):
+    if start_index <= c.STAGES.index("refactoring_loop") and not container.config.is_eval_only:
         new_approved_proposal, rejected_proposal = feedback_loop(
             rejected_proposal,
             process_func=proposal_func,
@@ -342,13 +318,13 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             sys.exit(130)
 
     print(
-        "The number of smells that weren't able to have an evaluation approved"
+        "The number of smells that weren't able to have an evaluation approved "
         f"within the maximum number of attempts is {len(rejected_eval)}."
     )
     if not container.config.is_eval_only:
         print(
-            "The number of smells that weren't able to have a refactoring proposal approved"
-                f"within the maximum number of attempts is {len(rejected_proposal)}."
+            "The number of smells that weren't able to have a refactoring proposal approved "
+            f"within the maximum number of attempts is {len(rejected_proposal)}."
         )
 
     if container.config.is_eval_only and container.config.start_stage != "saving":

@@ -1,9 +1,7 @@
 import json
 
 
-def eval_prompt(
-    type_smell: str, heuristics, smell, previous_eval=None, feedback=None
-) -> str:
+def eval_prompt(type_smell: str, heuristics, smell, previous_eval=None, feedback=None) -> str:
     file_name = smell.get("file_name", "Unknown File")
     class_name = smell.get("class_name", "N/A")
     method_name = smell.get("method_name", "N/A")
@@ -48,7 +46,7 @@ INSTRUCTIONS FOR YOUR STRUCTURED OBJECT
     return prompt
 
 
-def j_eval_prompt(type_smell: str, heuristics, smell, eval) -> str:
+def j_eval_prompt(type_smell: str, heuristics, smell, evaluation) -> str:
     prompt = f"""ROLE
 You are a senior software engineering auditor specialized in evaluating the quality of automated code smell assessments. Your task is NOT to re-evaluate the code smell itself, but to critically audit the reasoning and conclusion produced by a previous evaluator.
 
@@ -75,7 +73,7 @@ INPUTS
   Heuristics: {json.dumps(heuristics, indent=4, ensure_ascii=False)}
 
 Evaluator output under audit: 
-{json.dumps(eval, indent=4, ensure_ascii=False)} 
+{json.dumps(evaluation, indent=4, ensure_ascii=False)} 
 
 INSTRUCTIONS FOR YOUR STRUCTURED OBJECT
 1. Fill out the `rubrics` object fields (R1 through R6) detailing your exact critique for each evaluation criterion.
@@ -86,21 +84,19 @@ INSTRUCTIONS FOR YOUR STRUCTURED OBJECT
     return prompt
 
 
-def ref_prompt(
-    type_smell: str, heuristics, smell, eval, previous_proposal=None, feedback=None
-) -> str:
+def ref_prompt(type_smell: str, heuristics, smell, evaluation, previous_proposal=None, feedback=None) -> str:
     prompt = f"""ROLE
 You are a senior software engineer specialized in clean code and software refactoring. You will receive a validated code smell and its evaluation; you must propose a concrete refactoring to eliminate it while strictly preserving the original functional behavior.
 
 VALIDATED SMELL
   Type: {type_smell}
   Location: {smell.get("file_name", "Unknown")} -- {smell.get("class_name", "N/A")} / {smell.get("method_name", "N/A")}
-  Validation Summary: {eval.get("summary", "")}
+  Validation Summary: {evaluation.get("summary", "")}
   Affected Code: {smell.get("context", "")}
 
 EVALUATION OF THE VALIDATED SMELL
   Heuristics Reference: {json.dumps(heuristics, indent=4, ensure_ascii=False)}
-  Heuristics Analysis: {json.dumps(eval.get("heuristics", {}), indent=4, ensure_ascii=False)}
+  Heuristics Analysis: {json.dumps(evaluation.get("heuristics", {}), indent=4, ensure_ascii=False)}
 """
 
     if previous_proposal and feedback:
@@ -121,7 +117,7 @@ INSTRUCTIONS FOR YOUR STRUCTURED OBJECT
     return prompt
 
 
-def j_ref_prompt(type_smell: str, heuristics, smell, eval, ref) -> str:
+def j_ref_prompt(type_smell: str, heuristics, smell, evaluation, ref) -> str:
     prompt = f"""ROLE
 You are a senior software engineering auditor specialized in evaluating the quality of proposed source code refactorings. Your task is to critically audit the code correctness and suitability produced by a generator step.
 
@@ -137,9 +133,9 @@ AUDIT RUBRIC
 INPUTS
   Smell type: {type_smell}
   Location: {smell.get("file_name", "Unknown")} -- {smell.get("class_name", "N/A")} / {smell.get("method_name", "N/A")}
-  Validation Summary: {eval.get("summary", "")}
+  Validation Summary: {evaluation.get("summary", "")}
   Affected code: {smell.get("context", "")}
-  Heuristics Evaluations: {json.dumps(eval.get("heuristics", {}), indent=4, ensure_ascii=False)}
+  Heuristics Evaluations: {json.dumps(evaluation.get("heuristics", {}), indent=4, ensure_ascii=False)}
 
 Generator proposal under audit: 
 {json.dumps(ref, indent=4, ensure_ascii=False)} 
