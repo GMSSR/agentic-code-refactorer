@@ -1,3 +1,5 @@
+import os
+import shutil
 from collections.abc import Callable
 from pathlib import Path
 
@@ -117,12 +119,38 @@ def get_tool(code_path: Path) -> list[Candidate]:
 def _clang_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
+
+
+def _is_file(diag_path: Path | None, code_path: Path):
+    """Checks if the issue belongs to the target file."""
+    if not diag_path:
+        return False
+
+    diag_path = Path(diag_path)
+
+    if diag_path.name != code_path.name:
+        return False
+
+    if diag_path.is_absolute():
+        return diag_path.resolve() == code_path.resolve()
+
+    return True
+
+
 def _clippy_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
 def _pylint_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
+
+
+def _issue_snippet(file_path: Path, start_line: int, end_line: int) -> str:
+    lines = file_path.read_text(encoding="utf-8", errors="replace").splitlines(keepends=True)
+    start_idx = max(0, start_line - 1)
+    return "".join(lines[start_idx:end_line])
+
+
 def _eslint_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
@@ -133,3 +161,35 @@ def _sonar_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
 
+
+def find_project_root(code_path: Path, marker: str = "node_modules") -> Path | None:
+    """
+    Climbs up the directory tree starting from the file's location
+    to find the root directory containing the specified marker.
+    """
+    for parent in code_path.resolve().parents:
+        if (parent / marker).exists():
+            return parent
+    return None
+
+
+def find_binary(tool: str, code_path: Path) -> Path | None:
+    """
+    Finds a binary by checking system PATH, climbing up to find a local
+    node_modules folder relative to the file, or checking the user's Cargo binary directory.
+    """
+    system_path = shutil.which(tool)
+    if system_path:
+        return Path(system_path)
+
+    project_root = find_project_root(code_path, marker="node_modules")
+    if project_root:
+        local_node_bin = project_root / "node_modules" / ".bin" / tool
+        if local_node_bin.is_file() and os.access(local_node_bin, os.X_OK):
+            return local_node_bin.resolve()
+
+    cargo_bin = Path.home() / ".cargo" / "bin" / tool
+    if cargo_bin.is_file() and os.access(cargo_bin, os.X_OK):
+        return cargo_bin.resolve()
+
+    return None
