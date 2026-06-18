@@ -8,6 +8,11 @@ CONFIG_PATH: Path = SCRIPT_DIR / "config.json"
 HEURISTICS_PATH: Path = SCRIPT_DIR / "data" / "heuristics.json"
 CHECKPOINT_PATH: Path = SCRIPT_DIR / "data" / "checkpoint.json"
 LOG_PATH: Path = SCRIPT_DIR / "data" / "log.json"
+INDEX_DIR: Path = SCRIPT_DIR / "data" / "index_db"
+SAT_PATH: Path = SCRIPT_DIR / "data" / "sat.json"
+
+
+# stages of execution
 STAGES: list[str] = [
     "static_analysis",
     "eval_loop",
@@ -15,7 +20,6 @@ STAGES: list[str] = [
     "refactoring_loop",
     "saving",
 ]
-INDEX_DIR: Path = SCRIPT_DIR / "index_db"
 
 # Maximum numbers of times the evaluator/generator will try to generate a response to be judged.
 MAX_TENTATIVES: int = 3
