@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
@@ -189,8 +190,45 @@ def _issue_snippet(file_path: Path, start_line: int, end_line: int) -> str:
 
 
 def _eslint_tool(code_path: Path) -> list[Candidate]:
+    SAT_PATH.unlink(missing_ok=True)
+    try:
+        eslint_path = find_binary(tool="eslint", code_path=code_path)
+        project_root = find_project_root(code_path, marker="node_modules")
+        if not eslint_path:
+            return _sonar_tool(code_path)
+        subprocess.run(  # noqa: S603
+            [eslint_path, code_path, "--format=json", f"--output-file={SAT_PATH}"], cwd=project_root, check=False
+        )
+    except FileNotFoundError:
+        print("Error: 'eslint' executable not found in PATH.")
+        return _sonar_tool(code_path)
+
+    with SAT_PATH.open() as file:
+        output = json.load(file)
+
     candidates: list[Candidate] = []
+    for file in output:
+        if not _is_file(Path(file.get("filePath")), code_path):
+            continue
+        issues = file.get("messages")
+        for issue in issues:
+            smell = SmellCode(
+                file_name=str(code_path.name),
+                line=int(issue.get("line")),
+                snippet=str(
+                    _issue_snippet(
+                        file_path=code_path,
+                        start_line=issue.get("line"),
+                        end_line=issue.get("endLine"),
+                    )
+                ),
+                description=str(issue.get("message")),
+            )
+
+            candidates.append(Candidate(smell_type=issue.get("ruleId"), smell=smell))
     return candidates
+
+
 def _swift_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
