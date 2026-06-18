@@ -278,6 +278,53 @@ def _swift_tool(code_path: Path) -> list[Candidate]:
 
 def _sonar_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
+    file_path = code_path.as_posix()
+
+    sonar_token = os.environ.get("SONAR_TOKEN")
+    if not sonar_token:
+        print("Error: 'SONAR_TOKEN' environment variable is missing.")
+        return candidates
+
+    pysonar_executable = shutil.which("pysonar")
+    if pysonar_executable is None:
+        return candidates
+    try:
+        subprocess.run(  # noqa: S603
+            [
+                pysonar_executable,
+                f"-Dsonar.sources={file_path}",
+                "--token",
+                sonar_token,
+                "-Dsonar.host.url=http://localhost:9000",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"pysonar failed with exit code {e.returncode}")
+        print("Error output:\n", e.stderr)
+        return candidates
+
+    client = SonarQubeClient(base_url="http://localhost:9000", token=sonar_token)
+    component_key = "SAT:" + str(code_path)
+    output = client.issues.search(component_keys=[component_key], resolved=False)
+
+    for issue in output.issues:
+        smell = SmellCode(
+            file_name=code_path.name,
+            line=int(issue.line or 0),
+            snippet=str(
+                _issue_snippet(
+                    file_path=code_path,
+                    start_line=((issue.text_range.start_line if issue.text_range else None) or issue.line or 0),
+                    end_line=((issue.text_range.end_line if issue.text_range else None) or issue.line or 0),
+                )
+            ),
+            description=str(issue.message),
+        )
+
+        candidates.append(Candidate(smell_type=str(issue.message), smell=smell))
     return candidates
 
 
