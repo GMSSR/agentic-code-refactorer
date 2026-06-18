@@ -233,8 +233,67 @@ def _clang_snippet(file_path: Path, byte_offset) -> tuple[int, str]:
 
 
 def _clippy_tool(code_path: Path) -> list[Candidate]:
+    try:
+        cargo_path = find_binary(tool="cargo", code_path=code_path)
+        project_root = find_project_root(code_path, marker="Cargo.toml")
+        if not cargo_path or not project_root:
+            return _sonar_tool(code_path)
+
+        cargo_toml_path = project_root / "Cargo.toml"
+        output = subprocess.run(  # noqa: S603
+            [cargo_path, "clippy", "--manifest-path", cargo_toml_path, "--message-format=json"],
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+    except FileNotFoundError:
+        print("Error: 'cargo' executable not found in PATH.")
+        return _sonar_tool(code_path)
+
     candidates: list[Candidate] = []
+    for line in output.stdout.splitlines():
+        candidate = _clippy_parser(line, code_path, project_root=project_root)
+
+        if candidate is None:
+            continue
+
+        candidates.append(candidate)
+
     return candidates
+
+
+def _clippy_parser(line: str, code_path: Path, project_root: Path) -> Candidate | None:
+    if not line.strip():
+        return None
+
+    try:
+        data = json.loads(line)
+    except json.JSONDecodeError:
+        print("Error: Cargo-Clippy output isn't valid.")
+        return None
+
+    message_payload = data.get("message", {}) if data.get("reason") == "compiler-message" else {}
+    primary_span = next((s for s in message_payload.get("spans", []) if s.get("is_primary")), {})
+    raw_file = primary_span.get("file_name")
+
+    if (
+        not raw_file
+        or message_payload.get("level") not in ("warning", "error")
+        or not _is_file((issue_path := project_root / raw_file), code_path)
+    ):
+        return None
+
+    start_line = primary_span.get("line_start", 1)
+    end_line = primary_span.get("line_end", start_line)
+
+    smell_code = SmellCode(
+        file_name=str(issue_path),
+        line=start_line,
+        snippet=_issue_snippet(issue_path, start_line, end_line),
+        description=message_payload.get("message", ""),
+    )
+
+    return Candidate(smell_type=message_payload.get("code", {}).get("code", "clippy-diagnostic"), smell=smell_code)
 
 
 def _pylint_tool(code_path: Path) -> list[Candidate]:
