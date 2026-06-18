@@ -230,8 +230,52 @@ def _eslint_tool(code_path: Path) -> list[Candidate]:
 
 
 def _swift_tool(code_path: Path) -> list[Candidate]:
+    SAT_PATH.unlink(missing_ok=True)
     candidates: list[Candidate] = []
+    try:
+        swiftlint_path = find_binary(tool="swiftlint", code_path=code_path)
+        if not swiftlint_path:
+            print("Error: swiftlint not found")
+            return candidates
+        subprocess.run(  # noqa: S603
+            [swiftlint_path, "lint", code_path, "--reporter", "json", "--output", f"{SAT_PATH}"], check=False
+        )
+    except FileNotFoundError:
+        print("Error: 'swiftlint' executable not found in PATH.")
+        return candidates
+
+    try:
+        with SAT_PATH.open() as file:
+            output = json.load(file)
+    except (
+        FileNotFoundError,
+        json.JSONDecodeError,
+    ):
+        print("Error: output from swiftlint couldn't be read.")
+        return candidates
+
+    for issue in output:
+        if issue.get("file") is None:
+            continue
+        if not _is_file(Path(issue.get("file")), code_path):
+            continue
+        smell = SmellCode(
+            file_name=code_path.name,
+            line=int(issue.get("line") or 0),
+            snippet=str(
+                _issue_snippet(
+                    file_path=code_path,
+                    start_line=(issue.get("line") or 0),
+                    end_line=(issue.get("line") or 0),
+                )
+            ),
+            description=str(issue.get("reason")),
+        )
+
+        candidates.append(Candidate(smell_type=issue.get("rule_id"), smell=smell))
     return candidates
+
+
 def _sonar_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     return candidates
