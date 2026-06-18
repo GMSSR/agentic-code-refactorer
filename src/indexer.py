@@ -29,17 +29,16 @@ def indexer(code_path: Path):
     # SPLITTER
     # ====================================
 
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-    )
-
-    # language_f = get_language(code_path)
-    # text_splitter = RecursiveCharacterTextSplitter.from_language(
-    #     language=Language.language_f,
-    #     chunk_size=CHUNK_SIZE,
-    #     chunk_overlap=CHUNK_OVERLAP
-    # )
+    language_f = get_langchain_enum(get_language(code_path))
+    if language_f is None:
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+        )
+    else:
+        text_splitter = RecursiveCharacterTextSplitter.from_language(
+            language=language_f, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+        )
 
     texts = text_splitter.split_text(code_text)
 
