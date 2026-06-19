@@ -22,15 +22,11 @@ def test_unified_call_success(mock_completion):
     """Verifies successful LLM execution, schema validation, and config parameters."""
     # Build a nested mock structure mirroring litellm.ModelResponse
     mock_response = MagicMock(spec=litellm.ModelResponse)
-    mock_response.choices = [
-        MagicMock(message=MagicMock(content='{"item": "laptop", "quantity": 5}'))
-    ]
+    mock_response.choices = [MagicMock(message=MagicMock(content='{"item": "laptop", "quantity": 5}'))]
     mock_completion.return_value = mock_response
 
     # Execute the function
-    result = llm.unified_call(
-        prompt="Order 5 laptops", model="gpt-4o", schema=FakeSchema
-    )
+    result = llm.unified_call(prompt="Order 5 laptops", model="gpt-4o", schema=FakeSchema)
 
     # Assertions
     assert result == {"item": "laptop", "quantity": 5}
@@ -43,6 +39,7 @@ def test_unified_call_success(mock_completion):
         temperature=llm.TEMPERATURE,
         num_retries=3,
         max_tokens=llm.MAX_TOKENS,
+        num_ctx=8192,
     )
 
 
@@ -76,9 +73,7 @@ def test_unified_call_fails_on_pydantic_schema_mismatch(mock_completion):
     """Verifies that valid JSON failing the Pydantic schema propagates the error."""
     mock_response = MagicMock(spec=litellm.ModelResponse)
     # The JSON structure is missing 'quantity' required by ToySchema
-    mock_response.choices = [
-        MagicMock(message=MagicMock(content='{"item": "bad_json"}'))
-    ]
+    mock_response.choices = [MagicMock(message=MagicMock(content='{"item": "bad_json"}'))]
     mock_completion.return_value = mock_response
 
     # Pydantic validation errors propagate cleanly out of your function
@@ -118,9 +113,7 @@ def test_unified_call_fails_on_empty_choices(mock_completion):
 def test_unified_call_fails_on_malformed_json(mock_completion):
     """Verifies that malformed JSON returned by LLM propagates a ValidationError."""
     mock_response = MagicMock(spec=litellm.ModelResponse)
-    mock_response.choices = [
-        MagicMock(message=MagicMock(content='{"item": "laptop", "quantity": '))
-    ]
+    mock_response.choices = [MagicMock(message=MagicMock(content='{"item": "laptop", "quantity": '))]
     mock_completion.return_value = mock_response
 
     with pytest.raises(ValidationError):
