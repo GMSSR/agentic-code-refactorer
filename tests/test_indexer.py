@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from qdrant_client.models import Distance, VectorParams
 
 from src import indexer
 
@@ -18,9 +19,7 @@ def mock_qdrant_ollama():
         yield mock_embed, mock_client, mock_qdrant
 
 
-def test_indexer_clears_old_database_before_recreation(
-    tmp_path, monkeypatch, mock_qdrant_ollama
-):
+def test_indexer_clears_old_database_before_recreation(tmp_path, monkeypatch, mock_qdrant_ollama):
     mock_embed, mock_client, mock_qdrant = mock_qdrant_ollama
 
     # Creates a temporary directory
@@ -56,11 +55,12 @@ def test_indexer_clears_old_database_before_recreation(
     mock_embed.assert_called_once_with(model="mock-model")
 
     # Verifies that the function called QdrantVectorStore to build the index
-    mock_qdrant.from_texts.assert_called_once_with(
-        client=mock_client,
-        texts=["from constants import INDEX_DIR"],
-        embedding=mock_embed.return_value,
-        path=str(fake_index_dir),
+    mock_client.create_collection.assert_called_once_with(
         collection_name="index",
+        vectors_config=VectorParams(size=len(mock_embed.embed_query("test")), distance=Distance.COSINE),
+    )
+    mock_qdrant.assert_called_once_with(client=mock_client, collection_name="index", embedding=mock_embed.return_value)
+    mock_qdrant.return_value.add_texts.assert_called_once_with(
+        texts=["from constants import INDEX_DIR"],
     )
     mock_client.close.assert_called_once()

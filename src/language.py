@@ -127,7 +127,7 @@ def _clang_tool(code_path: Path) -> list[Candidate]:
     candidates: list[Candidate] = []
     SAT_PATH.unlink(missing_ok=True)
     try:
-        clang_path = find_binary(tool="clang-tidy", code_path=code_path)
+        clang_path = _find_binary(tool="clang-tidy", code_path=code_path)
         if not clang_path:
             raise FileNotFoundError
         code = subprocess.run(  # noqa: S603
@@ -234,8 +234,8 @@ def _clang_snippet(file_path: Path, byte_offset) -> tuple[int, str]:
 
 def _clippy_tool(code_path: Path) -> list[Candidate]:
     try:
-        cargo_path = find_binary(tool="cargo", code_path=code_path)
-        project_root = find_project_root(code_path, marker="Cargo.toml")
+        cargo_path = _find_binary(tool="cargo", code_path=code_path)
+        project_root = _find_project_root(code_path, marker="Cargo.toml")
         if not cargo_path or not project_root:
             return _sonar_tool(code_path)
 
@@ -340,8 +340,8 @@ def _issue_snippet(file_path: Path, start_line: int, end_line: int) -> str:
 def _eslint_tool(code_path: Path) -> list[Candidate]:
     SAT_PATH.unlink(missing_ok=True)
     try:
-        eslint_path = find_binary(tool="eslint", code_path=code_path)
-        project_root = find_project_root(code_path, marker="node_modules")
+        eslint_path = _find_binary(tool="eslint", code_path=code_path)
+        project_root = _find_project_root(code_path, marker="node_modules")
         if not eslint_path:
             return _sonar_tool(code_path)
         subprocess.run(  # noqa: S603
@@ -381,7 +381,7 @@ def _swift_tool(code_path: Path) -> list[Candidate]:
     SAT_PATH.unlink(missing_ok=True)
     candidates: list[Candidate] = []
     try:
-        swiftlint_path = find_binary(tool="swiftlint", code_path=code_path)
+        swiftlint_path = _find_binary(tool="swiftlint", code_path=code_path)
         if not swiftlint_path:
             print("Error: swiftlint not found")
             return candidates
@@ -476,7 +476,7 @@ def _sonar_tool(code_path: Path) -> list[Candidate]:
     return candidates
 
 
-def find_project_root(code_path: Path, marker: str = "node_modules") -> Path | None:
+def _find_project_root(code_path: Path, marker: str = "node_modules") -> Path | None:
     """
     Climbs up the directory tree starting from the file's location
     to find the root directory containing the specified marker.
@@ -487,7 +487,7 @@ def find_project_root(code_path: Path, marker: str = "node_modules") -> Path | N
     return None
 
 
-def find_binary(tool: str, code_path: Path) -> Path | None:
+def _find_binary(tool: str, code_path: Path) -> Path | None:
     """
     Finds a binary by checking system PATH, climbing up to find a local
     node_modules folder relative to the file, or checking the user's Cargo binary directory.
@@ -496,7 +496,7 @@ def find_binary(tool: str, code_path: Path) -> Path | None:
     if system_path:
         return Path(system_path)
 
-    project_root = find_project_root(code_path, marker="node_modules")
+    project_root = _find_project_root(code_path, marker="node_modules")
     if project_root:
         local_node_bin = project_root / "node_modules" / ".bin" / tool
         if local_node_bin.is_file() and os.access(local_node_bin, os.X_OK):

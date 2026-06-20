@@ -104,26 +104,24 @@ async def test_rag_orchestration(mock_rag_worker, mock_qdrant_cls, mock_qdrant_c
 # 3. Tests for static (Sync Orchestrator)
 # ==========================================
 @patch("src.static_ana.ProcessPoolExecutor")
-@patch("src.static_ana._json_parser")
 @patch("src.static_ana._rag", new_callable=AsyncMock)
 @patch("src.static_ana.indexer")
-def test_static_pipeline_orchestration(mock_indexer, mock_rag, mock_json_parser, mock_executor_cls):
+@patch("src.static_ana.get_tool")
+def test_static_pipeline_orchestration(mock_tool, mock_indexer, mock_rag, mock_executor_cls):
     """Verifies process tracking, parsing, and execution order inside the main pipeline."""
     # 1. Mock ProcessPoolExecutor interactions
     mock_executor = MagicMock()
     mock_future = MagicMock()
     mock_executor.submit.return_value = mock_future
     mock_executor_cls.return_value = mock_executor
-
-    # 2. Mock internal structural returns
-    mock_json_parser.return_value = ["mock_cand_1", "mock_cand_2"]
+    mock_tool.return_value = ["mock_cand_1", "mock_cand_2"]
 
     # Note: Even though static() uses asyncio.run(), mocking _rag with AsyncMock
     # allows asyncio.run to execute it like a real coroutine.
     mock_rag.return_value = [("TypeA", {"res": 1}), ("TypeB", {"res": 2})]
 
     # 3. Execute
-    code_path = Path("/mock/project")
+    code_path = Path("/mock/project.py")
     pipeline_output = static(code_path)
 
     # 4. Assertions for background indexing
@@ -132,7 +130,6 @@ def test_static_pipeline_orchestration(mock_indexer, mock_rag, mock_json_parser,
     mock_future.result.assert_called_once()  # Assures we blocked until indexer finished
     mock_executor.shutdown.assert_called_once_with(wait=True)
 
-    mock_json_parser.assert_called_once_with({})
     mock_rag.assert_called_once_with(["mock_cand_1", "mock_cand_2"], code_path)
     assert pipeline_output == [("TypeA", {"res": 1}), ("TypeB", {"res": 2})]
 
