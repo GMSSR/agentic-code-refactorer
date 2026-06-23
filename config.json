@@ -7,8 +7,8 @@
     },
     "cloud": {
         "eval_model": "mistral/mistral-medium-latest",
-        "j_eval_model": "gemini/gemini-3.5-flash",
-        "ref_model": "mistral/mistral-codestral-latest",
-        "j_ref_model": "gemini/gemini-3.5-flash"
+        "j_eval_model": "gemini/gemma4:31b",
+        "ref_model": "mistral/codestral-2508",
+        "j_ref_model": "gemini/gemma4:31b"
     }
 }
