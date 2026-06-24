@@ -27,7 +27,7 @@ dev = [
 ]
 
 [tool.uv]
-exclude-newer = "7 days"
+exclude-newer = "3 days"
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S101"]
