@@ -3,7 +3,7 @@ name = "agentic-code-refactorer"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "langchain-core==1.4.1",
+    "langchain-core==1.4.8",
     "langchain-ollama==1.1.0",
     "langchain-qdrant>=1.1.0",
     "langchain-text-splitters==1.1.2",
