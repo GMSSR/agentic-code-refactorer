@@ -1,5 +1,5 @@
 {
-    "local":{
+    "local": {
         "eval_model": "ollama/ministral-3:3b",
         "j_eval_model": "ollama/gemma4:e2b",
         "ref_model": "ollama/ministral-3:3b",
@@ -7,8 +7,8 @@
     },
     "cloud": {
         "eval_model": "mistral/mistral-medium-latest",
-        "j_eval_model": "gemini/gemma4:31b",
+        "j_eval_model": "mistral/mistral-large-latest",
         "ref_model": "mistral/codestral-2508",
-        "j_ref_model": "gemini/gemma4:31b"
+        "j_ref_model": "mistral/mistral-large-latest"
     }
 }

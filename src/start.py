@@ -43,6 +43,11 @@ def _parse_arg() -> argparse.Namespace:
         action="store_true",
         help="Runs the script locally without using cloud APIs",
     )
+    parser.add_argument(
+        "--direct",
+        action="store_true",
+        help="Runs in Direct Mode, reading target file content directly and skipping local tools/databases.",
+    )
 
     args = parser.parse_args()
 
@@ -50,11 +55,14 @@ def _parse_arg() -> argparse.Namespace:
     if not args.code_path and not args.resume:
         parser.error("Either --resume or a code-path need to be provided.")
 
-    if args.resume and (args.code_path or args.force):
-        parser.error("Cannot use --resume with --code-path or --force.")
+    if args.resume and (args.code_path or args.force or args.direct):
+        parser.error("Cannot use --resume with --code-path, --force, or --direct.")
 
     if args.force and not args.code_path:
         parser.error("Argument --force requires a code path to be given.")
+
+    if args.direct and not args.code_path:
+        parser.error("Argument --direct requires a code path to be given.")
 
     if args.code_path and not Path(args.code_path).is_file():
         parser.error(
@@ -111,8 +119,13 @@ def _load(local: bool) -> tuple[dict[str, Any], str, str, str, str]:
         ref_model = validated_config.cloud.ref_model
         j_ref_model = validated_config.cloud.j_ref_model
 
-        if not os.getenv("MISTRAL_API_KEY") or not os.getenv("GEMINI_API_KEY"):
-            raise ConfigError("Error getting the API Keys.")
+        is_mistral_used = any("mistral" in m or "codestral" in m for m in (eval_model, j_eval_model, ref_model, j_ref_model))
+        is_gemini_used = any("gemini" in m for m in (eval_model, j_eval_model, ref_model, j_ref_model))
+
+        if is_mistral_used and not os.getenv("MISTRAL_API_KEY"):
+            raise ConfigError("Error getting the MISTRAL_API_KEY.")
+        if is_gemini_used and not os.getenv("GEMINI_API_KEY"):
+            raise ConfigError("Error getting the GEMINI_API_KEY.")
 
     return heuristics, eval_model, j_eval_model, ref_model, j_ref_model
 
@@ -189,8 +202,9 @@ def start() -> Container:
         output = []
 
     config = AppConfig(
-        is_eval_only=args.eval,
+        is_eval_only=args.eval or args.direct,
         is_local=args.local,
+        is_direct=args.direct,
         code_path=code_path,
         start_stage=start_stage,
         eval_model=eval_model,

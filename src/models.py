@@ -9,6 +9,7 @@ class AppConfig:
 
     is_eval_only: bool
     is_local: bool
+    is_direct: bool
     code_path: Path
     start_stage: str
 
