@@ -118,7 +118,29 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         skips = 0
         temp = []
         skipped_smells = []
-        code_smells = static(code_path=container.config.code_path)
+        if container.config.is_direct:
+            try:
+                target_code_content = container.config.code_path.read_text(encoding="utf-8")
+            except Exception as e:
+                print(f"Error reading target file: {e}", file=sys.stderr)
+                sys.exit(1)
+
+            code_smells = []
+            for smell_type in container.config.heuristic_data.keys():
+                if smell_type == "Default":
+                    continue
+                smell_code = {
+                    "file_name": container.config.code_path.name,
+                    "class_name": "N/A",
+                    "method_name": "N/A",
+                    "line": 1,
+                    "snippet": "",
+                    "description": f"Direct evaluation for {smell_type}",
+                    "context": target_code_content,
+                }
+                code_smells.append((smell_type, smell_code))
+        else:
+            code_smells = static(code_path=container.config.code_path)
 
         for smell_type, smell in code_smells:
             heuristics = container.config.heuristic_data.get(smell_type, "N")

@@ -6,15 +6,18 @@ from constants import MAX_TOKENS, TEMPERATURE
 
 def unified_call(prompt: str, model: str, schema: type[BaseModel]) -> dict:
     try:
-        response = litellm.completion(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            response_format=schema,
-            temperature=TEMPERATURE,
-            num_retries=3,
-            max_tokens=MAX_TOKENS,
-            num_ctx=8192,
-        )
+        kwargs = {
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "response_format": schema,
+            "temperature": TEMPERATURE,
+            "num_retries": 3,
+            "max_tokens": MAX_TOKENS,
+        }
+        if model.startswith("ollama/"):
+            kwargs["num_ctx"] = 8192
+
+        response = litellm.completion(**kwargs)
 
         if not isinstance(response, litellm.ModelResponse):
             raise TypeError("Streamed response received.")
