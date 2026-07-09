@@ -18,20 +18,36 @@ class FakeSchema(BaseModel):
 # 1. HAPPY PATH TEST
 # ==========================================
 @patch("src.llm.litellm.completion")
-def test_unified_call_success(mock_completion):
-    """Verifies successful LLM execution, schema validation, and config parameters."""
-    # Build a nested mock structure mirroring litellm.ModelResponse
+def test_unified_call_local_success(mock_completion):
+    """Verifies successful LLM execution with local model (ollama/) includes num_ctx."""
     mock_response = MagicMock(spec=litellm.ModelResponse)
     mock_response.choices = [MagicMock(message=MagicMock(content='{"item": "laptop", "quantity": 5}'))]
     mock_completion.return_value = mock_response
 
-    # Execute the function
+    result = llm.unified_call(prompt="Order 5 laptops", model="ollama/mistral", schema=FakeSchema)
+
+    assert result == {"item": "laptop", "quantity": 5}
+    mock_completion.assert_called_once_with(
+        model="ollama/mistral",
+        messages=[{"role": "user", "content": "Order 5 laptops"}],
+        response_format=FakeSchema,
+        temperature=llm.TEMPERATURE,
+        num_retries=3,
+        max_tokens=llm.MAX_TOKENS,
+        num_ctx=8192,
+    )
+
+
+@patch("src.llm.litellm.completion")
+def test_unified_call_cloud_success(mock_completion):
+    """Verifies successful LLM execution with cloud model (no ollama/) omits num_ctx."""
+    mock_response = MagicMock(spec=litellm.ModelResponse)
+    mock_response.choices = [MagicMock(message=MagicMock(content='{"item": "laptop", "quantity": 5}'))]
+    mock_completion.return_value = mock_response
+
     result = llm.unified_call(prompt="Order 5 laptops", model="gpt-4o", schema=FakeSchema)
 
-    # Assertions
     assert result == {"item": "laptop", "quantity": 5}
-
-    # Verify that your internal constants were passed accurately to litellm
     mock_completion.assert_called_once_with(
         model="gpt-4o",
         messages=[{"role": "user", "content": "Order 5 laptops"}],
@@ -39,7 +55,6 @@ def test_unified_call_success(mock_completion):
         temperature=llm.TEMPERATURE,
         num_retries=3,
         max_tokens=llm.MAX_TOKENS,
-        num_ctx=8192,
     )
 
 

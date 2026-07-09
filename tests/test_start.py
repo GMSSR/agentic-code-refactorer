@@ -179,9 +179,14 @@ class TestLoad:
         mock_constants.HEURISTICS_PATH.open.return_value.__enter__.return_value = (
             mock_open(read_data="{}")()
         )
-        mock_validate.return_value = MagicMock()
+        mock_setting = MagicMock()
+        mock_setting.cloud.eval_model = "mistral/mistral-medium"
+        mock_setting.cloud.j_eval_model = "gemini/gemini-1.5-flash"
+        mock_setting.cloud.ref_model = "mistral/codestral"
+        mock_setting.cloud.j_ref_model = "gemini/gemini-1.5-flash"
+        mock_validate.return_value = mock_setting
 
-        with pytest.raises(ConfigError, match="Error getting the API Keys"):
+        with pytest.raises(ConfigError, match="Error getting the .*API_KEY"):
             _load(local=False)
 
 
@@ -253,6 +258,7 @@ class TestStart:
         args.local = True
         args.resume = False
         args.eval = True
+        args.direct = False
         args.code_path = "test.py"
         mock_parse.return_value = args
 
@@ -265,6 +271,7 @@ class TestStart:
         mock_config.assert_called_once_with(
             is_eval_only=True,
             is_local=True,
+            is_direct=False,
             code_path=Path("test.py"),
             start_stage="static_analysis",
             eval_model="em",
@@ -303,6 +310,7 @@ class TestStart:
         args.local = False
         args.resume = True
         args.eval = False
+        args.direct = False
         mock_parse.return_value = args
 
         mock_load.return_value = ("heuristics", "em", "jem", "rm", "jrm")
@@ -322,6 +330,7 @@ class TestStart:
         mock_config.assert_called_once_with(
             is_eval_only=False,
             is_local=False,
+            is_direct=False,
             code_path=Path("resumed.py"),
             start_stage="stage2",
             eval_model="em",
@@ -346,6 +355,7 @@ class TestStart:
         args = MagicMock()
         args.force = True
         args.resume = False
+        args.direct = False
         args.code_path = "test.py"
         mock_parse.return_value = args
 
