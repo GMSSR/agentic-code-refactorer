@@ -42,6 +42,7 @@ def signal_handler(sig, frame):
 
 
 def eval_func(old_eval):  # likely should be moved to another file
+    print("EVAL_FUNC")
     smell_type, smell, heuristics, evaluation, judgment = old_eval
     evaluation = unified_call(
         prompt=eval_prompt(
@@ -58,6 +59,7 @@ def eval_func(old_eval):  # likely should be moved to another file
 
 
 def judge_eval_func(evaluation):  # likely should be moved to another file
+    print("JUDGE_EVAL_FUNC")
     smell_type, smell, heuristics, evaluation = evaluation
     judgment = unified_call(
         prompt=j_eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell, evaluation=evaluation),
@@ -68,6 +70,7 @@ def judge_eval_func(evaluation):  # likely should be moved to another file
 
 
 def proposal_func(old_proposal):  # likely should be moved to another file
+    print("PROPOSAL_FUNC")
     smell_type, smell, heuristics, evaluation, proposal, judgment = old_proposal
     proposal = unified_call(
         prompt=ref_prompt(
@@ -85,6 +88,7 @@ def proposal_func(old_proposal):  # likely should be moved to another file
 
 
 def judge_proposal_func(refactor):  # likely should be moved to another file
+    print("JUDGE_PROPOSAL_FUNC")
     smell_type, smell, heuristics, evaluation, proposal = refactor
     judgment = unified_call(
         prompt=j_ref_prompt(
@@ -148,9 +152,22 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             except Exception as e:
                 print(f"Warning: Failed to load Oracle.csv in main parser: {e}")
 
+        # Identify already evaluated files if resuming
+        evaluated_files = set()
+        for item in approved_eval:
+            if len(item) > 1 and isinstance(item[1], dict) and "file_name" in item[1]:
+                evaluated_files.add(item[1]["file_name"])
+        for item in rejected_eval:
+            if len(item) > 1 and isinstance(item[1], dict) and "file_name" in item[1]:
+                evaluated_files.add(item[1]["file_name"])
+
         for java_file in java_files:
             file_smells = []
             f_key = java_file.name.lower()
+
+            if java_file.name in evaluated_files:
+                print(f"Already evaluated, resuming of file skipped: {java_file.name}")
+                continue
 
             if container.config.is_direct:
                 if oracle_file_smells and f_key in oracle_file_smells:
@@ -186,11 +203,13 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                 heuristics = container.config.heuristic_data.get(heuristic_key, "N")
                 if heuristics == "N":
                     heuristics = container.config.heuristic_data.get("Default")
+                print("main evaluation")
                 evaluation = unified_call(
                     prompt=eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell),
                     model=container.config.eval_model,
                     schema=Evaluation,
                 )
+                print("main judgment")
                 judgment = unified_call(
                     prompt=j_eval_prompt(
                         type_smell=smell_type,
@@ -207,6 +226,15 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                 else:
                     rejected_eval.append([smell_type, smell, heuristics, evaluation, judgment])
             print(f"Finished evaluation of file: {java_file.name}")
+            save_checkpoint(
+                "static_analysis",
+                approved_e=approved_eval,
+                rejected_e=rejected_eval,
+                approved_p=approved_proposal,
+                rejected_p=rejected_proposal,
+                output=container.state.output,
+                code_path=container.config.code_path,
+            )
 
         print(f"The number of smells that were skipped due to missing heuristics was: {skips}\n")
         try:
@@ -279,6 +307,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
     if start_index <= c.STAGES.index("initial_refactoring") and not container.config.is_eval_only:
         temp = []
         for smell_type, smell, heuristics, evaluation in approved_eval:
+            print("another proposal")
             proposal = unified_call(
                 prompt=ref_prompt(
                     type_smell=smell_type,
@@ -292,6 +321,7 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
             temp.append([smell_type, smell, heuristics, evaluation, proposal])
 
         for smell_type, smell, heuristics, evaluation, proposal in temp:
+            print("another judgment")
             judgment = unified_call(
                 prompt=j_ref_prompt(
                     type_smell=smell_type,

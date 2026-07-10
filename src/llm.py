@@ -15,12 +15,15 @@ class RateTracker:
         self.last_request_time = 0.0
 
     def update_limits(self, model: str):
+        import os
+        is_paid = os.environ.get("MISTRAL_PAID", "").lower() == "true"
+
         if "mistral-large" in model:
-            self.limit_rps = 0.07
-            self.limit_tpm = 250_000
+            self.limit_rps = 2.0 if is_paid else 0.07
+            self.limit_tpm = 2_000_000 if is_paid else 250_000
         elif "mistral-medium" in model:
-            self.limit_rps = 0.83  # default latest
-            self.limit_tpm = 25_000
+            self.limit_rps = 2.0 if is_paid else 0.83
+            self.limit_tpm = 2_000_000 if is_paid else 25_000
         elif "ministral-3b" in model:
             self.limit_rps = 12.50
             self.limit_tpm = 1_300_000
@@ -28,14 +31,17 @@ class RateTracker:
             self.limit_rps = 3.13
             self.limit_tpm = 625_000
         elif "open-mistral-nemo" in model:
-            self.limit_rps = 0.50
-            self.limit_tpm = 500_000
+            self.limit_rps = 2.0 if is_paid else 0.50
+            self.limit_tpm = 2_000_000 if is_paid else 500_000
         elif "mistral-small" in model:
-            self.limit_rps = 0.83
-            self.limit_tpm = 50_000
+            self.limit_rps = 5.0 if is_paid else 0.83
+            self.limit_tpm = 2_000_000 if is_paid else 50_000
+        elif "gemini" in model:
+            self.limit_rps = 5.0
+            self.limit_tpm = 1_000_000
         else:
-            self.limit_rps = 1.0
-            self.limit_tpm = 50_000
+            self.limit_rps = 2.0 if is_paid else 1.0
+            self.limit_tpm = 1_000_000 if is_paid else 50_000
 
     def record_request(self, tokens: int):
         now = time.time()

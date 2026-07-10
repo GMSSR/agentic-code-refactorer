@@ -43,4 +43,5 @@ TOP_K = 3
 TEMPERATURE = 0.5
 
 # Maximum size of the response in tokens
-MAX_TOKENS = 4096
+MAX_TOKENS = 8192
+

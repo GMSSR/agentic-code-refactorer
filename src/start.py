@@ -182,6 +182,17 @@ def start() -> Container:
 
     heuristic_data, eval_model, j_eval_model, ref_model, j_ref_model = _load(args.local)
 
+    # Auto-resume: if checkpoint exists for the same path and force is not set, set resume=True
+    if not args.resume and not args.force and args.code_path and c.CHECKPOINT_PATH.is_file():
+        try:
+            with c.CHECKPOINT_PATH.open("r", encoding="utf-8") as file:
+                cp_data = json.load(file)
+            cp_code_path = cp_data.get("code_path")
+            if cp_code_path and Path(cp_code_path).resolve() == Path(args.code_path).resolve():
+                args.resume = True
+        except Exception:
+            pass
+
     if args.resume:
         (
             code_path,
@@ -193,7 +204,7 @@ def start() -> Container:
             output,
         ) = _resume()
     else:
-        code_path = Path(args.code_path)
+        code_path = Path(args.code_path) if args.code_path else Path(".")
         start_stage = "static_analysis"
         approved_eval = []
         rejected_eval = []
