@@ -128,18 +128,43 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         skips = 0
         temp = []
         skipped_smells = []
+
+        # Load Oracle.csv mapping if it exists to filter smells on direct mode
+        oracle_path = c.SCRIPT_DIR / "data" / "Oracle.csv"
+        oracle_file_smells = {}
+        if oracle_path.is_file():
+            import csv
+            try:
+                with oracle_path.open("r", encoding="utf-8") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        f_name = row.get("Class_File", "").strip().lower()
+                        s_name = row.get("Code_Smell", "").strip()
+                        if f_name and s_name:
+                            if f_name not in oracle_file_smells:
+                                oracle_file_smells[f_name] = []
+                            if s_name not in oracle_file_smells[f_name]:
+                                oracle_file_smells[f_name].append(s_name)
+            except Exception as e:
+                print(f"Warning: Failed to load Oracle.csv in main parser: {e}")
+
         for java_file in java_files:
             file_smells = []
+            f_key = java_file.name.lower()
+
             if container.config.is_direct:
+                if oracle_file_smells and f_key in oracle_file_smells:
+                    smell_types = oracle_file_smells[f_key]
+                else:
+                    smell_types = [k for k in container.config.heuristic_data.keys() if k != "Default"]
+
                 try:
                     target_code_content = java_file.read_text(encoding="utf-8")
                 except Exception as e:
                     print(f"Error reading target file {java_file}: {e}", file=sys.stderr)
                     continue
 
-                for smell_type in container.config.heuristic_data.keys():
-                    if smell_type == "Default":
-                        continue
+                for smell_type in smell_types:
                     smell_code = {
                         "file_name": java_file.name,
                         "class_name": "N/A",
@@ -154,7 +179,11 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
                 file_smells = static(code_path=java_file)
 
             for smell_type, smell in file_smells:
-                heuristics = container.config.heuristic_data.get(smell_type, "N")
+                oracle_to_heuristics = {
+                    "Large Class": "God Class",
+                }
+                heuristic_key = oracle_to_heuristics.get(smell_type, smell_type)
+                heuristics = container.config.heuristic_data.get(heuristic_key, "N")
                 if heuristics == "N":
                     heuristics = container.config.heuristic_data.get("Default")
                 evaluation = unified_call(
