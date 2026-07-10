@@ -64,9 +64,9 @@ def _parse_arg() -> argparse.Namespace:
     if args.direct and not args.code_path:
         parser.error("Argument --direct requires a code path to be given.")
 
-    if args.code_path and not Path(args.code_path).is_file():
+    if args.code_path and not (Path(args.code_path).is_file() or Path(args.code_path).is_dir()):
         parser.error(
-            "The provided code path does not exist or is not pointing to a file"
+            "The provided code path does not exist"
         )
 
     return args

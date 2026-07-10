@@ -1,0 +1,269 @@
+Class_File,Class_Name,Code_Smell,Ratings,Average,Oracle
+AbortedTransactionException.java,AbortedTransactionException,Refused Bequest,"3, 5, 2",3.3,1
+AbstractMetaMember.java,AbstractMetaMember,Data Class,"4, 3, 5, 5",4.3,1
+AbstractSendMessageProcessor.java,AbstractSendMessageProcessor,Intensive Coupling,"3, 5",4.0,1
+AbstractSentinelAspectSupport.java,AbstractSentinelAspectSupport,Long Method,"4, 5, 5",4.7,1
+AbstractWriteHolder.java,AbstractWriteHolder,Feature Envy,"2, 4, 2",2.7,0
+AccessControlLogEntry.java,AccessControlLogEntry,Data Class,"4, 3, 5",4.0,1
+AccessTokenModel.java,AccessTokenModel,Long Parameter List,"2, 4, 1",2.3,0
+AckSchedulerKey.java,AckSchedulerKey,Refused Bequest,"1, 1, 3",1.7,0
+AclException.java,AclException,Data Class,"4, 4",4.0,1
+AdminBrokerProcessor.java,AdminBrokerProcessor,Feature Envy,"4, 2, 4",3.3,1
+AllMembersSupplier.java,AllMembersSupplier,Feature Envy,"5, 3",4.0,1
+AnalysisContext.java,AnalysisContext,Shotgun Surgery,"4, 1, 1",2.0,0
+AndroidGL20.java,AndroidGL20,Long Parameter List,"4, 5",4.5,1
+AndroidGraphics.java,AndroidGraphics,Data Class,"5, 2, 1",2.7,0
+AndroidMusic.java,AndroidMusic,Long Method,"5, 3, 4",4.0,1
+AnnotationScanner.java,AnnotationScanner,Long Parameter List,"4, 1, 5",3.3,1
+ApiException.java,ApiException,Refused Bequest,"2, 3",2.5,0
+ApolloDataSourceFactoryBean.java,ApolloDataSourceFactoryBean,Data Class,"1, 5",3.0,0
+ArgumentTokenizer.java,ArgumentTokenizer,Long Method,"5, 5, 4",4.7,1
+AssemblyProcessor.java,AssemblyProcessor,Shotgun Surgery,"4, 2, 5",3.7,1
+AssertUtil.java,AssertUtil,Dispersed Coupling,"1, 2",1.5,0
+AttributeNameHistoWalker.java,AttributeNameHistoWalker,Long Parameter List,"3, 3",3.0,0
+AutoLocker.java,AutoLocker,Feature Envy,"3, 1, 4",2.7,0
+AwtCodec.java,AwtCodec,Feature Envy,"5, 4",4.5,1
+AztecCode.java,AztecCode,Data Class,"5, 5, 5",5.0,1
+BaseSwaggerConfig.java,BaseSwaggerConfig,Feature Envy,"5, 4, 3",4.0,1
+BatchExecutor.java,BatchExecutor,Intensive Coupling,"4, 5",4.5,1
+BatchResult.java,BatchResult,Data Class,"5, 3, 5",4.3,1
+BeanCopier.java,BeanCopier,Intensive Coupling,"3, 3",3.0,0
+BillboardParticleBatch.java,BillboardParticleBatch,Large Class,"5, 4",4.5,1
+BinaryRedisPipeline.java,BinaryRedisPipeline,Long Parameter List,"2, 4, 4, 3, 5",3.6,1
+BitMatrix.java,BitMatrix,Shotgun Surgery,"1, 1",1.0,0
+BrokerController.java,BrokerController,Shotgun Surgery,"4, 3",3.5,1
+btActivatingCollisionAlgorithm.java,btActivatingCollisionAlgorithm,Refused Bequest,"1, 4, 4",3.0,0
+BuildCommand.java,BuildCommand,Data Class,"1, 3, 2",2.0,0
+BytecodeInstruction.java,BytecodeInstruction,Intensive Coupling,"5, 3, 4, 5",4.3,1
+CachingExecutor.java,CachingExecutor,Feature Envy,"5, 2, 1, 3",2.8,0
+CameraInputController.java,CameraInputController,Shotgun Surgery,"1, 1, 5",2.3,0
+CellFormulaTagHandler.java,CellFormulaTagHandler,Refused Bequest,"2, 5, 3",3.3,1
+CharacterReader.java,CharacterReader,Long Parameter List,"4, 3",3.5,1
+ClassicPluginStrategy.java,ClassicPluginStrategy,Feature Envy,"4, 2, 2, 1",2.3,0
+ClassLoaderCommand.java,ClassLoaderCommand,Long Method,"3, 5, 5, 5",4.5,1
+ClassLoaderModel.java,ClassLoaderModel,Large Class,"5, 5, 5",5.0,1
+ClassReader.java,ClassReader,Long Method,"5, 5, 5, 5",5.0,1
+ClassWriter.java,ClassWriter,Large Class,"4, 2, 3",3.0,0
+ClientHandler.java,ClientHandler,Feature Envy,"4, 4",4.0,1
+ClientHead.java,ClientHead,Shotgun Surgery,"3, 2, 2",2.3,0
+Closer.java,Closer,Shotgun Surgery,"4, 4, 4",4.0,1
+ClusterConnectionManager.java,ClusterConnectionManager,Intensive Coupling,"5, 2, 1",2.7,0
+CmsSubjectCategoryExample.java,CmsSubjectCategoryExample,Large Class,"5, 5, 4",4.7,1
+CN_QuantifierSegmenter.java,QuantifierSegmenter,Long Method,"5, 5, 5",5.0,1
+CodahaleHealthChecker.java,CodahaleHealthChecker,Dispersed Coupling,"5, 5, 5",5.0,1
+Code.java,Code,Feature Envy,"1, 2, 4",2.3,0
+CodeCacheEventWalker.java,CodeCacheEventWalker,Dispersed Coupling,"4, 1, 2",2.3,0
+CodeCacheStage.java,CodeCacheStage,Long Method,"4, 5, 5",4.7,1
+CommandDecoder.java,CommandDecoder,Dispersed Coupling,"3, 5",4.0,1
+CompareObjectsSettings.java,CompareObjectsSettings,Data Class,"5, 4",4.5,1
+CompareToBuilder.java,CompareToBuilder,Long Method,"4, 1, 5, 3",3.3,1
+ComparisonCriteria.java,ComparisonCriteria,Long Method,"4, 5, 5",4.7,1
+Configuration.java,Configuration,Data Class,"5, 5, 1",3.7,1
+Connection.java,Connection,Shotgun Surgery,"3, 5",4.0,1
+ConnectionPageShellCommands.java,ConnectionPageShellCommands,Intensive Coupling,"5, 5, 5",5.0,1
+ConnectionPool.java,ConnectionPool,Feature Envy,"2, 4, 4, 2",3.0,0
+ConstrainableInputStream.java,ConstrainableInputStream,Large Class,"3, 3, 1, 4",2.8,0
+ConstructorConstructor.java,ConstructorConstructor,Intensive Coupling,"4, 4, 5",4.3,1
+ContentType.java,ContentType,Data Class,"2, 3",2.5,0
+ConversionException.java,ConversionException,Refused Bequest,"1, 2, 5",2.7,0
+CronExpression.java,CronExpression,Intensive Coupling,"2, 1",1.5,0
+DataFormatter.java,DataFormatter,Large Class,"5, 4",4.5,1
+DBeaverCore.java,DBeaverCore,Dispersed Coupling,"5, 5, 5",5.0,1
+DefaultDateTypeAdapter.java,DefaultDateTypeAdapter,Refused Bequest,"5, 3, 1",3.0,0
+DefaultJedisSocketFactory.java,DefaultJedisSocketFactory,Intensive Coupling,"5, 5",5.0,1
+DefaultJSONParser.java,DefaultJSONParser,Data Class,3,3.0,0
+DefaultMQAdminExtImpl.java,DefaultMQAdminExtImpl,Long Method,"5, 5, 5",5.0,1
+DetectionResultRowIndicatorColumn.java,DetectionResultRowIndicatorColumn,Dispersed Coupling,"4, 4",4.0,1
+DiagnosedStreamCorruptionException.java,DiagnosedStreamCorruptionException,Long Parameter List,"5, 1, 2",2.7,0
+Dictionary.java,Dictionary,Large Class,3,3.0,0
+DictSegment.java,DictSegment,Intensive Coupling,"1, 4, 3",2.7,0
+DirectedGraphConnections.java,DirectedGraphConnections,Long Method,"4, 4, 3, 5",4.0,1
+DirectoryBrowserSupport.java,DirectoryBrowserSupport,Intensive Coupling,"5, 4",4.5,1
+DokanyVolume.java,DokanyVolume,Refused Bequest,"5, 5, 5, 5",5.0,1
+DriverDataSource.java,DriverDataSource,Intensive Coupling,"5, 1, 5",3.7,1
+DubboServiceMetadataRepository.java,DubboServiceMetadataRepository,Intensive Coupling,"4, 4, 4",4.0,1
+DuplicateRemovedScheduler.java,DuplicateRemovedScheduler,Feature Envy,"3, 5, 1",3.0,0
+EmbedServer.java,EmbedServer,Large Class,"5, 5",5.0,1
+EnablePluginCommand.java,EnablePluginCommand,Dispersed Coupling,"2, 4, 4",3.3,1
+EntryConfig.java,EntryConfig,Long Parameter List,"3, 4, 5",4.0,1
+EsProductServiceImpl.java,EsProductServiceImpl,Intensive Coupling,"2, 2, 2, 3",2.3,0
+Evaluator.java,Evaluator,Refused Bequest,"5, 1, 4",3.3,1
+easyexcel-2.2.11_ExcelDataConvertException.java,ExcelDataConvertException,Data Class,"5, 5, 5",5.0,1
+ExcelWriteFillExecutor.java,ExcelWriteFillExecutor,Dispersed Coupling,"2, 4, 3",3.0,0
+ExcelWriter.java,ExcelWriter,Long Method,"1, 4, 2",2.3,0
+Excluder.java,Excluder,Shotgun Surgery,"5, 1",3.0,0
+ExecutionSequencer.java,ExecutionSequencer,Dispersed Coupling,"5, 5",5.0,1
+ExecutorRouteBusyover.java,ExecutorRouteBusyover,Refused Bequest,"1, 2, 3, 2",2.0,0
+ExpandedProductParsedResult.java,ExpandedProductParsedResult,Long Parameter List,"5, 5, 5",5.0,1
+Faker.java,Faker,Long Method,"5, 3, 5",4.3,1
+FakeValuesService.java,FakeValuesService,Large Class,"5, 4, 5",4.7,1
+FastByteArrayOutputStream.java,FastByteArrayOutputStream,Feature Envy,"2, 1",1.5,0
+FieldAttributes.java,FieldAttributes,Data Class,"5, 5",5.0,1
+FileRefreshableDataSource.java,FileRefreshableDataSource,Refused Bequest,"5, 1, 2",2.7,0
+Finance.java,Finance,Intensive Coupling,"5, 3, 2",3.3,1
+FireBirdMetaModel.java,FireBirdMetaModel,Long Parameter List,"2, 5, 1",2.7,0
+FlowControllerV1.java,FlowControllerV1,Intensive Coupling,"3, 5, 3",3.7,1
+FrameworkField.java,FrameworkField,Refused Bequest,"4, 2, 3",3.0,0
+FxApplication.java,FxApplication,Long Parameter List,"5, 5",5.0,1
+GeneralAppIdDecoder.java,GeneralAppIdDecoder,Intensive Coupling,"2, 4, 4",3.3,1
+GeometryViewerRegistry.java,GeometryViewerRegistry,Large Class,"5, 5, 5",5.0,1
+GsonBuilder.java,GsonBuilder,Long Method,"2, 1",1.5,0
+HandleCallbackParam.java,HandleCallbackParam,Data Class,"4, 5, 5",4.7,1
+HandshakeData.java,HandshakeData,Data Class,"5, 5, 5",5.0,1
+HazelcastPubSubStore.java,HazelcastPubSubStore,Dispersed Coupling,"4, 3, 2",3.0,0
+HelpCommand.java,HelpCommand,Refused Bequest,"1, 3, 2, 2",2.0,0
+HikariConfig.java,HikariConfig,Shotgun Surgery,"2, 3, 5",3.3,1
+HikariDataSource.java,HikariDataSource,Feature Envy,"5, 4, 5",4.7,1
+HikariPool.java,HikariPool,Shotgun Surgery,"2, 1, 3, 3",2.3,0
+HistoryPageFilter.java,HistoryPageFilter,Large Class,"5, 5",5.0,1
+HomeController.java,HomeController,Large Class,"4, 3, 2",3.0,0
+HostAndPort.java,HostAndPort,Intensive Coupling,"1, 2, 4, 5",3.0,0
+HtmlTreeBuilderStateTest.java,HtmlTreeBuilderStateTest,Dispersed Coupling,"1, 3, 2",2.0,0
+HttpClientDownloader.java,HttpClientDownloader,Long Parameter List,"2, 2",2.0,0
+HttpClientRequestContext.java,HttpClientRequestContext,Data Class,"5, 5, 5, 5",5.0,1
+HttpConnection.java,HttpConnection,Data Class,"2, 1, 1",1.3,0
+HttpHeadRequestTest.java,HttpHeadRequestTest,Refused Bequest,1,1.0,0
+HttpRequest.java,HttpRequest,Large Class,"5, 5",5.0,1
+HttpRequestMethodsMatcherTest.java,HttpRequestMethodsMatcherTest,Refused Bequest,"4, 1, 2",2.3,0
+HttpServerTest.java,HttpServerTest,Shotgun Surgery,"3, 4, 3",3.3,1
+HTTPSession.java,HTTPSession,Dispersed Coupling,"4, 5",4.5,1
+IKArbitrator.java,IKArbitrator,Feature Envy,"3, 4, 5",4.0,1
+ImmutableEnumMap.java,ImmutableEnumMap,Refused Bequest,"4, 2, 4",3.3,1
+IncompleteElementException.java,IncompleteElementException,Refused Bequest,"1, 5, 1",2.3,0
+InlineSizeHistoVisitable.java,InlineSizeHistoVisitable,Refused Bequest,"2, 4",3.0,0
+InPacketHandler.java,InPacketHandler,Long Method,"3, 4, 4",3.7,1
+InterceptorProcessor.java,InterceptorProcessor,Shotgun Surgery,"1, 2, 1",1.3,0
+Internet.java,Internet,Dispersed Coupling,"5, 5, 5",5.0,1
+InvokeCountOperation.java,InvokeCountOperation,Feature Envy,"5, 5",5.0,1
+JavaBeanDeserializer.java,JavaBeanDeserializer,Intensive Coupling,"5, 5",5.0,1
+JavassistProxyFactory.java,JavassistProxyFactory,Intensive Coupling,"4, 2, 4, 5",3.8,1
+JedisClusterCommand.java,JedisClusterCommand,Feature Envy,"5, 3, 5",4.3,1
+JedisClusterTest.java,JedisClusterTest,Large Class,"5, 4, 5, 5",4.8,1
+JedisSentinelPool.java,JedisSentinelPool,Long Method,"5, 5, 3, 5",4.5,1
+JITDataModel.java,JITDataModel,Large Class,"4, 1, 5",3.3,1
+JobGroupController.java,JobGroupController,Feature Envy,"5, 4, 4",4.3,1
+JobLogController.java,JobLogController,Dispersed Coupling,"5, 5, 4",4.7,1
+JobTriggerPoolHelper.java,JobTriggerPoolHelper,Long Parameter List,"4, 4, 4",4.0,1
+JsonAdapterAnnotationTypeAdapterFactory.java,JsonAdapterAnnotationTypeAdapterFactory,Feature Envy,"4, 4",4.0,1
+JSONTokener.java,JSONTokener,Shotgun Surgery,"1, 5, 4",3.3,1
+JUnitCommandLineParseResult.java,JUnitCommandLineParseResult,Shotgun Surgery,"2, 5, 2",3.0,0
+Lexeme.java,Lexeme,Shotgun Surgery,"5, 5, 4",4.7,1
+LexemePath.java,LexemePath,Refused Bequest,"2, 4, 1",2.3,0
+Lifecycle.java,Lifecycle,Shotgun Surgery,"1, 2, 2",1.7,0
+LineTransformationOutputStream.java,LineTransformationOutputStream,Refused Bequest,"5, 4",4.5,1
+LinkedHashMultimap.java,LinkedHashMultimap,Data Class,1,1.0,0
+LinkedTreeMap.java,LinkedTreeMap,Large Class,"5, 5, 4",4.7,1
+LocalCacheListener.java,LocalCacheListener,Data Class,"1, 3, 1, 4",2.3,0
+Location.java,Location,Dispersed Coupling,"4, 5, 5",4.7,1
+Lorem.java,Lorem,Long Parameter List,"1, 2",1.5,0
+MailUtil.java,MailUtil,Long Parameter List,5,5.0,1
+MapDeserializer.java,MapDeserializer,Refused Bequest,"2, 4",3.0,0
+MapperBuilderAssistant.java,MapperBuilderAssistant,Long Parameter List,"5, 5, 5, 5",5.0,1
+MapTypeAdapterFactory.java,MapTypeAdapterFactory,Dispersed Coupling,"5, 2",3.5,1
+MarkdownWebServerPlugin.java,MarkdownWebServerPlugin,Long Method,"1, 2, 1",1.3,0
+MethodCallInliner.java,MethodCallInliner,Long Parameter List,"3, 2, 4",3.0,0
+MethodInfo.java,MethodInfo,Data Class,"5, 5",5.0,1
+MethodRoadie.java,MethodRoadie,Intensive Coupling,"5, 4, 5",4.7,1
+MethodVisitor.java,MethodVisitor,Long Parameter List,"1, 4, 5",3.3,1
+MigrationRunController.java,MigrationRunController,Large Class,"5, 5",5.0,1
+MinMaxPriorityQueue.java,MinMaxPriorityQueue,Large Class,"5, 5",5.0,1
+MockNamingService.java,MockNamingService,Long Parameter List,"1, 2",1.5,0
+Monitor.java,Monitor,Dispersed Coupling,"1, 2, 1",1.3,0
+NacosDiscoveryProperties.java,NacosDiscoveryProperties,Shotgun Surgery,"5, 1, 3",3.0,0
+NacosWatch.java,NacosWatch,Feature Envy,"5, 2, 5",4.0,1
+NiceSecurePasswordField.java,NiceSecurePasswordField,Shotgun Surgery,"5, 5, 2",4.0,1
+NioClientTest.java,NioClientTest,Dispersed Coupling,"2, 2, 5",3.0,0
+NodeTraversor.java,NodeTraversor,Long Method,"4, 5, 5",4.7,1
+NumberTest.java,NumberTest,Data Class,"1, 1, 1",1.0,0
+OmsPortalOrderServiceImpl.java,OmsPortalOrderServiceImpl,Dispersed Coupling,"5, 5",5.0,1
+OmsReceiverInfoParam.java,OmsReceiverInfoParam,Data Class,"5, 1, 5, 5",4.0,1
+OrderController.java,OrderController,Long Method,"3, 1, 4",2.7,0
+PacketEncoder.java,PacketEncoder,Intensive Coupling,"4, 3, 5",4.0,1
+PageModelExtractor.java,PageModelExtractor,Dispersed Coupling,"3, 5, 5",4.3,1
+PageResult.java,PageResult,Data Class,"5, 3, 5",4.3,1
+ParamFlowChecker.java,ParamFlowChecker,Shotgun Surgery,"5, 3, 2",3.3,1
+ParentRunner.java,ParentRunner,Large Class,"5, 5, 5",5.0,1
+ParentRunnerTest.java,ParentRunnerTest,Data Class,"1, 2",1.5,0
+ParserConfig.java,ParserConfig,Shotgun Surgery,"5, 5",5.0,1
+PassphraseEntryController.java,PassphraseEntryController,Long Method,"5, 5, 4",4.7,1
+PendingEntry.java,PendingEntry,Long Parameter List,"2, 3",2.5,0
+PendingTransactionsDialog.java,PendingTransactionsDialog,Refused Bequest,"5, 1, 1",2.3,0
+PlainPermissionManager.java,PlainPermissionManager,Dispersed Coupling,"4, 2, 4",3.3,1
+PooledDataSource.java,PooledDataSource,Shotgun Surgery,"4, 4, 3",3.7,1
+PoolStats.java,PoolStats,Data Class,"3, 3",3.0,0
+Preconditions.java,Preconditions,Long Parameter List,"1, 4, 1",2.0,0
+PrefixPluginLogger.java,PrefixPluginLogger,Long Parameter List,"5, 4, 4",4.3,1
+PreparedStatementHandler.java,PreparedStatementHandler,Dispersed Coupling,"4, 4",4.0,1
+Profiler.java,Profiler,Data Class,"4, 1, 5",3.3,1
+ProjectExportWizard.java,ProjectExportWizard,Feature Envy,"2, 4",3.0,0
+PropertyElf.java,PropertyElf,Dispersed Coupling,"5, 1, 1",2.3,0
+ProxyDatabaseMetaData.java,ProxyDatabaseMetaData,Long Parameter List,1,1.0,0
+PullAPIWrapper.java,PullAPIWrapper,Long Parameter List,"3, 5, 1",3.0,0
+QueryParser.java,QueryParser,Feature Envy,"1, 4, 4",3.0,0
+QueueTest.java,QueueTest,Intensive Coupling,"5, 5, 1",3.7,1
+QuotedStringTokenizer.java,QuotedStringTokenizer,Long Method,"5, 2",3.5,1
+RandomGenerator.java,RandomGenerator,Refused Bequest,"1, 3",2.0,0
+RandomService.java,RandomService,Shotgun Surgery,"3, 5, 2",3.3,1
+RedisPriorityScheduler.java,RedisPriorityScheduler,Refused Bequest,"3, 1",2.0,0
+RedissonBloomFilter.java,RedissonBloomFilter,Long Method,"2, 4, 5, 2",3.3,1
+RedissonObject.java,RedissonObject,Shotgun Surgery,"3, 4, 5",4.0,1
+RedissonSessionRepository.java,RedissonSessionRepository,Large Class,"5, 5, 5, 3",4.5,1
+RedissonTransactionalBucket.java,RedissonTransactionalBucket,Refused Bequest,"5, 5, 5, 2",4.3,1
+ReedSolomonDecoder.java,ReedSolomonDecoder,Feature Envy,"4, 1, 5",3.3,1
+RelationshipTest.java,RelationshipTest,Refused Bequest,"3, 5, 1",3.0,0
+ReplyMessageProcessorTest.java,ReplyMessageProcessorTest,Large Class,"5, 1, 2",2.7,0
+RequestLimiter.java,RequestLimiter,Large Class,"4, 2, 1",2.3,0
+ResizeController.java,ResizeController,Intensive Coupling,"2, 5, 4",3.7,1
+RestAdapter.java,RestAdapter,Large Class,"2, 2, 3",2.3,0
+RestMethodInfoTest.java,RestMethodInfoTest,Long Method,"5, 4",4.5,1
+ResultLoaderMap.java,ResultLoaderMap,Large Class,"4, 4, 4, 5",4.3,1
+RetrofitError.java,RetrofitError,Long Parameter List,"4, 5, 5",4.7,1
+RocketMQMessageHandler.java,RocketMQMessageHandler,Dispersed Coupling,"3, 1",2.0,0
+RouterNanoHTTPD.java,RouterNanoHTTPD,Long Parameter List,"3, 5",4.0,1
+RuleContainer.java,RuleContainer,Long Parameter List,"1, 3, 1",1.7,0
+SaFoxUtil.java,SaFoxUtil,Large Class,"4, 5, 4",4.3,1
+SaJwtUtil.java,SaJwtUtil,Long Method,"1, 2, 4",2.3,0
+SaOAuth2Template.java,SaOAuth2Template,Feature Envy,"1, 3, 2, 3",2.3,0
+SaSecureUtil.java,SaSecureUtil,Dispersed Coupling,"2, 2, 1",1.7,0
+SaTokenConfig.java,SaTokenConfig,Shotgun Surgery,"5, 1, 1",2.3,0
+SaTokenContextForThreadLocalStorage.java,SaTokenContextForThreadLocalStorage,Data Class,"5, 2, 5",4.0,1
+SaTokenException.java,SaTokenException,Refused Bequest,"2, 4, 5",3.7,1
+ScriptProcessorBuilder.java,ScriptProcessorBuilder,Large Class,"4, 3, 1",2.7,0
+Selectable.java,Selectable,Shotgun Surgery,"5, 5",5.0,1
+SentinelApacheHttpClientConfig.java,SentinelApacheHttpClientConfig,Data Class,"5, 4, 4",4.3,1
+SentinelDubboConsumerFilter.java,SentinelDubboConsumerFilter,Feature Envy,"4, 4, 4",4.0,1
+ServiceLoader.java,ServiceLoader,Dispersed Coupling,"2, 5, 4, 4",3.8,1
+Settings.java,Settings,Data Class,"5, 1, 1",2.3,0
+SimpleEchoSocket.java,SimpleEchoSocket,Large Class,"1, 2",1.5,0
+SimpleWebServer.java,SimpleWebServer,Intensive Coupling,"4, 1",2.5,0
+SingleRoomBroadcastOperations.java,SingleRoomBroadcastOperations,Large Class,"4, 2, 1",2.3,0
+SmartContentSelector.java,SmartContentSelector,Intensive Coupling,"3, 4, 1",2.7,0
+SmsFlashPromotionProductRelationServiceImpl.java,SmsFlashPromotionProductRelationServiceImpl,Long Parameter List,"4, 4, 4",4.0,1
+SMSParsedResult.java,SMSParsedResult,Refused Bequest,"1, 2, 2",1.7,0
+SocketIOChannelInitializer.java,SocketIOChannelInitializer,Feature Envy,"5, 4",4.5,1
+Spider.java,Spider,Long Method,"5, 5",5.0,1
+Stage.java,Stage,Dispersed Coupling,"2, 4",3.0,0
+StatisticSlot.java,StatisticSlot,Dispersed Coupling,"2, 5, 4",3.7,1
+StpLogic.java,StpLogic,Intensive Coupling,"3, 5, 5",4.3,1
+StringUtils.java,StringUtils,Intensive Coupling,"1, 2",1.5,0
+StubConnection.java,StubConnection,Refused Bequest,"5, 5, 3",4.3,1
+SymbolInfo.java,SymbolInfo,Large Class,"4, 4, 5",4.3,1
+TableView.java,TableView,Feature Envy,1,1.0,0
+TestConnections.java,TestConnections,Large Class,"5, 5",5.0,1
+TestProxies.java,TestProxies,Long Method,"5, 5, 4",4.7,1
+TextEditorUtils.java,TextEditorUtils,Shotgun Surgery,"4, 3, 1",2.7,0
+TextureAtlas.java,TextureAtlas,Feature Envy,"3, 4, 2",3.0,0
+Throwables.java,Throwables,Dispersed Coupling,"4, 1, 1",2.0,0
+Tokeniser.java,Tokeniser,Intensive Coupling,"4, 1",2.5,0
+TokenQueue.java,TokenQueue,Shotgun Surgery,"2, 1, 5, 2",2.5,0
+TransactionMQProducer.java,TransactionMQProducer,Refused Bequest,"5, 4",4.5,1
+TreeTypeAdapter.java,TreeTypeAdapter,Long Parameter List,"5, 3, 2",3.3,1
+UmsMemberService.java,UmsMemberService,Shotgun Surgery,"2, 4, 1, 2, 4, 4",2.8,0
+UrlConnectionClient.java,UrlConnectionClient,Feature Envy,"5, 3, 4",4.0,1
+Vault.java,Vault,Dispersed Coupling,"5, 5",5.0,1
+VCardResultParser.java,VCardResultParser,Long Method,"5, 5, 4",4.7,1
+WebLogAspect.java,WebLogAspect,Long Method,"2, 3, 5",3.3,1
+WriteWorkbookHolder.java,WriteWorkbookHolder,Intensive Coupling,"4, 1, 4, 3",3.0,0
+XMLConfigBuilder.java,XMLConfigBuilder,Long Method,"5, 5, 2, 5",4.3,1
+XxlJobExecutor.java,XxlJobExecutor,Long Method,"3, 5",4.0,1
+XxlJobInfoDao.java,XxlJobInfoDao,Shotgun Surgery,"4, 1, 1",2.0,0

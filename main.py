@@ -16,9 +16,11 @@ import constants as c  # noqa: E402
 from src.llm import unified_call  # noqa: E402
 from src.prompt import eval_prompt, j_eval_prompt, j_ref_prompt, ref_prompt  # noqa: E402
 from src.schemas import Evaluation, JudgementE, JudgementR, Refactor  # noqa: E402
+import time  # noqa: E402
 from src.start import start  # noqa: E402
 from src.static_ana import static  # noqa: E402
 from src.utils import feedback_loop, save_checkpoint  # noqa: E402
+from src.metrics import compile_metrics  # noqa: E402
 
 if str(c.PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(c.PROJECT_DIR))
@@ -103,12 +105,20 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
 
     container = start()
 
+    start_time = time.time()
+
     approved_eval = container.state.approved_eval
     rejected_eval = container.state.rejected_eval
     approved_proposal = container.state.approved_proposal
     rejected_proposal = container.state.rejected_proposal
 
-    file_pure_name = Path(container.config.code_path).stem
+    code_path = Path(container.config.code_path)
+    if code_path.is_dir():
+        java_files = sorted(list(code_path.rglob("*.java")))
+        file_pure_name = code_path.name if code_path.name else "batch"
+    else:
+        java_files = [code_path]
+        file_pure_name = code_path.stem
     RESULTS_PATH = c.SCRIPT_DIR / "data" / f"results_{file_pure_name}.json"
     print(f"Results for this run will be saved to: {RESULTS_PATH}\n")
 
@@ -118,65 +128,56 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         skips = 0
         temp = []
         skipped_smells = []
-        if container.config.is_direct:
-            try:
-                target_code_content = container.config.code_path.read_text(encoding="utf-8")
-            except Exception as e:
-                print(f"Error reading target file: {e}", file=sys.stderr)
-                sys.exit(1)
-
-            code_smells = []
-            for smell_type in container.config.heuristic_data.keys():
-                if smell_type == "Default":
+        for java_file in java_files:
+            file_smells = []
+            if container.config.is_direct:
+                try:
+                    target_code_content = java_file.read_text(encoding="utf-8")
+                except Exception as e:
+                    print(f"Error reading target file {java_file}: {e}", file=sys.stderr)
                     continue
-                smell_code = {
-                    "file_name": container.config.code_path.name,
-                    "class_name": "N/A",
-                    "method_name": "N/A",
-                    "line": 1,
-                    "snippet": "",
-                    "description": f"Direct evaluation for {smell_type}",
-                    "context": target_code_content,
-                }
-                code_smells.append((smell_type, smell_code))
-        else:
-            code_smells = static(code_path=container.config.code_path)
 
-        for smell_type, smell in code_smells:
-            heuristics = container.config.heuristic_data.get(smell_type, "N")
-            if heuristics == "N":
-                # skips += 1
-                # skipped_smells.append([smell_type, smell])
-                # continue
-                heuristics = container.config.heuristic_data.get("Default")
-            evaluation = unified_call(
-                prompt=eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell),
-                model=container.config.eval_model,
-                schema=Evaluation,
-            )
-            temp.append([smell_type, smell, heuristics, evaluation])
-
-        for (
-            smell_type,
-            smell,
-            heuristics,
-            evaluation,
-        ) in temp:  # This likely can be offloaded to feedback_loop, remember to change save_checkpoint to support
-            judgment = unified_call(
-                prompt=j_eval_prompt(
-                    type_smell=smell_type,
-                    heuristics=heuristics,
-                    smell=smell,
-                    evaluation=evaluation,
-                ),
-                model=container.config.j_eval_model,
-                schema=JudgementE,
-            )
-
-            if judgment.get("verdict") == "approved":
-                approved_eval.append([smell_type, smell, heuristics, evaluation])
+                for smell_type in container.config.heuristic_data.keys():
+                    if smell_type == "Default":
+                        continue
+                    smell_code = {
+                        "file_name": java_file.name,
+                        "class_name": "N/A",
+                        "method_name": "N/A",
+                        "line": 1,
+                        "snippet": "",
+                        "description": f"Direct evaluation for {smell_type}",
+                        "context": target_code_content,
+                    }
+                    file_smells.append((smell_type, smell_code))
             else:
-                rejected_eval.append([smell_type, smell, heuristics, evaluation, judgment])
+                file_smells = static(code_path=java_file)
+
+            for smell_type, smell in file_smells:
+                heuristics = container.config.heuristic_data.get(smell_type, "N")
+                if heuristics == "N":
+                    heuristics = container.config.heuristic_data.get("Default")
+                evaluation = unified_call(
+                    prompt=eval_prompt(type_smell=smell_type, heuristics=heuristics, smell=smell),
+                    model=container.config.eval_model,
+                    schema=Evaluation,
+                )
+                judgment = unified_call(
+                    prompt=j_eval_prompt(
+                        type_smell=smell_type,
+                        heuristics=heuristics,
+                        smell=smell,
+                        evaluation=evaluation,
+                    ),
+                    model=container.config.j_eval_model,
+                    schema=JudgementE,
+                )
+
+                if judgment.get("verdict") == "approved":
+                    approved_eval.append([smell_type, smell, heuristics, evaluation])
+                else:
+                    rejected_eval.append([smell_type, smell, heuristics, evaluation, judgment])
+            print(f"Finished evaluation of file: {java_file.name}")
 
         print(f"The number of smells that were skipped due to missing heuristics was: {skips}\n")
         try:
@@ -367,6 +368,21 @@ if __name__ == "__main__":  # needed due to using ProcessPoolExecutor on static_
         tmp_filename.replace(RESULTS_PATH)
         if c.CHECKPOINT_PATH.exists():
             c.CHECKPOINT_PATH.unlink(missing_ok=True)
+
+        # Compile metrics comparing with data/Oracle.csv
+        oracle_path = c.SCRIPT_DIR / "data" / "Oracle.csv"
+        if oracle_path.is_file():
+            inference_time = time.time() - start_time
+            report_json_path = c.SCRIPT_DIR / "data" / "evaluation_report.json"
+            report_md_path = c.SCRIPT_DIR / "data" / "evaluation_report.md"
+            print("Compiling metrics compared to Oracle.csv...")
+            compile_metrics(
+                results=container.state.output,
+                oracle_path=oracle_path,
+                inference_time=inference_time,
+                output_report_json=report_json_path,
+                output_report_md=report_md_path
+            )
     except Exception as e:
         print(f"Warning: Failed to save results: {e}", file=sys.stderr)
         sys.exit(12)
